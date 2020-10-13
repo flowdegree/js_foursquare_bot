@@ -11,5 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "isomorphic-unfetch": "^3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mo9a7i/js_buwajd_api_cronjob_bots.git"
   }
 }
