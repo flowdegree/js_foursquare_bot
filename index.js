@@ -1,18 +1,27 @@
-const { config } = require('./assets/config/config.json');
-const bar = require('./models/foursquare.js');
+const { getFriends, getLastSeen, getRecent, likeUnliked } = require('./controllers/fsq_controller');
 
 
-const api = new bar({ api_key: config.foursquare.Mohannad.token });
+async function doit() {
+	const value = await getFriends();
+	console.log(value.data.response.friends);
+}
 
-api.getFriends().then(result =>{
-	console.log(result);
-	result.response.friends.items.forEach(element => {
-		console.log(element.firstName);
-	});
-}).catch(() =>{
-	console.log('failed to get friends');
-});
+async function doit2() {
+	const value = await getLastSeen();
+	console.log(value.data.response.user.lastPassive);
+}
 
+async function doit3() {
+	const value = await getRecent({ limit: 2 });
+	console.log(value.data.response.recent);
+}
+
+async function doit4() {
+	const value = await likeUnliked({ limit: 60 });
+	console.log(value);
+}
+
+doit4();
 
 // api.getLastSeen().then(result =>{
 // 	const location = result.response.user.checkins.items[0].venue.location;
