@@ -108,7 +108,6 @@ class FoursquareAPI {
 		this._request(https, options, body);
 	}
 
-
 	request(endpoint = '', options = {}) {
 
 		const url = this.basePath + endpoint;
@@ -221,9 +220,6 @@ class FoursquareAPI {
 
 		return this.request(url, config);
 	}
-
-
-
 
 
 // Checkin Functions
