@@ -2,15 +2,6 @@ const _ = require('lodash');
 const axios = require('axios').default;
 const querystring = require('querystring');
 
-
-//  To get token
-// 	Client ID:		3MHHDBBCI04AYIODGEHZLXQYUAYDBGBYMIJVIYVSHQBPQT0G
-// 	Client secret:	0GNQNFIGS3YYKVVJTX4XSKV0IUHAMH15D2OHGIWEMVAOUTFW
-// 	1. https://foursquare.com/oauth2/authenticate?client_id=3MHHDBBCI04AYIODGEHZLXQYUAYDBGBYMIJVIYVSHQBPQT0G&response_type=code&redirect_uri=http://www.6d.com.sa
-// 	2. https://foursquare.com/oauth2/access_token?client_id=3MHHDBBCI04AYIODGEHZLXQYUAYDBGBYMIJVIYVSHQBPQT0G&client_secret=0GNQNFIGS3YYKVVJTX4XSKV0IUHAMH15D2OHGIWEMVAOUTFW&grant_type=authorization_code&redirect_uri=http://www.6d.com.sa&code=R4NI4H111RWGJVOPJLGSY0DWBQTJF4IPSF0EKFGBKOAG1KJF#_=_
-// 	3. LHM2UWPE1MCKXTU1KOTQZKZIHO322IHZZN3HI3UXEZYYV5PQ
-
-
 class FoursquareAPI {
 	constructor(config) {
 		this.config = {
