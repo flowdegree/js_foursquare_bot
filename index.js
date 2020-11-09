@@ -39,7 +39,7 @@ cron.schedule('*/10 * * * *', () => {
 });
 
 cron.schedule('*/10 * * * * *', () => {
-	console.log('Running Every 1 Seconds');
+	console.log('Running Every 10 Seconds');
 	TWT_a5tabotReverseAnswer();
 });
 

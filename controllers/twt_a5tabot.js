@@ -1,11 +1,15 @@
 const _ = require('lodash');
+const path = require('path');
+
 
 const fs = require('fs');
 const config_file_name = '../assets/config/config.json';
-const { config } = require(config_file_name);
+const {
+	config
+} = require(config_file_name);
 
 const Twitter = require('twitter');
-const twitter_handle = "a5tabot";
+const twitter_handle = 'a5tabot';
 
 const client = new Twitter({
 	consumer_key: config.twitter.a5tabot.CONSUMER_KEY,
@@ -27,22 +31,24 @@ async function likeHashtag(options) {
 
 	const tweets = await client.get('search/tweets', options);
 	console.log('Got: ' + tweets.statuses.length + ' tweets');
-	if(tweets.statuses) {
+	if (tweets.statuses) {
 		let counter = 1;
-		for(const tweet of tweets.statuses) {
+		for (const tweet of tweets.statuses) {
 			try {
 				await new Promise(r => setTimeout(r, 1000));
 				console.log('trying to like ' + tweet.text.substring(0, 40));
 
-				const result = await client.post('favorites/create', { id: tweet.id_str, count: options.count });
+				const result = await client.post('favorites/create', {
+					id: tweet.id_str,
+					count: options.count
+				});
 				console.log(result.id_str);
 
-				if(counter >= options.number_of_likes) {
+				if (counter >= options.number_of_likes) {
 					break;
 				}
 				counter++;
-			}
-			catch (error) {
+			} catch (error) {
 				console.log(error);
 
 			}
@@ -54,8 +60,7 @@ async function getRateLimits() {
 	try {
 		const result = await client.get('application/rate_limit_status', {});
 		console.log(JSON.stringify(result, null, 4));
-	}
-	catch (error) {
+	} catch (error) {
 		console.log(error);
 	}
 }
@@ -72,8 +77,8 @@ async function reverseAnswer() {
 	const tweets = await client.get('search/tweets', options);
 	console.log('Found ' + tweets.statuses.length + ' sent to a5tabot');
 
-	if(tweets.statuses.length > 0) {
-		for(const tweet of tweets.statuses) {
+	if (tweets.statuses.length > 0) {
+		for (const tweet of tweets.statuses) {
 			let question = tweet.text.replace(new RegExp("\@" + twitter_handle, "ig"), "");
 			question = question.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
 			console.log(question);
@@ -90,12 +95,13 @@ async function reverseAnswer() {
 			try {
 				const result = await client.post('statuses/update', reply);
 
-				if(result) {
+				if (result) {
 					config.twitter.a5tabot.last_reversed = tweet.id_str;
-					saveScript(config_file_name, { 'config': config });
+					saveScript(config_file_name, {
+						'config': config
+					});
 				}
-			}
-			catch (error) {
+			} catch (error) {
 				console.log(error);
 			}
 
@@ -104,17 +110,15 @@ async function reverseAnswer() {
 }
 
 function saveScript(filename, object) {
-
-    fs.writeFile(__dirname + '\\' + filename, JSON.stringify(object, null, 4), function writeJSON(err) {
+	fs.writeFile(__dirname + path.sep + filename, JSON.stringify(object, null, 4), function writeJSON(err) {
 		if (err) return console.log(err);
-		//console.log(JSON.stringify(object, null, 4));
+		// console.log(JSON.stringify(object, null, 4));
 		console.log('writing to ' + filename);
-	  });
+	});
 
 }
 
-async function followFollowers() {
-}
+async function followFollowers() {}
 
 function unethical_answer(s) {
 	//    /(\w)\w*$/
