@@ -38,10 +38,9 @@ cron.schedule('*/10 * * * *', () => {
 	a5tabotTwitterLiker();
 });
 
-cron.schedule('* * * * * *', () => {
-	console.log('Running Every 1 minutes');
+cron.schedule('*/10 * * * * *', () => {
+	console.log('Running Every 1 Seconds');
 	a5tabotReverseAnswer();
-	//BuFai7anTwitterLiker();
 });
 
 
