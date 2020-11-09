@@ -71,7 +71,7 @@ class FoursquareAPI {
 			'limit': options.limit.toString(),
 		});
 
-		return axios.get(this.basePath + 'checkins/recent', { 'params': this.config });
+		return axios.get(this.basePath + 'checkins/recent', { 'params': this.config, paramsSerializer: params => { return querystring.stringify(params)} });
 	}
 
 
