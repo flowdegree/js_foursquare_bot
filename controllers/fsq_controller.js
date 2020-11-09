@@ -45,10 +45,10 @@ async function likeUnliked(options) {
 				}
 			}
 		});
-		return 'success';
+		return 'success liked unliked';
 	}
 	catch (error) {
-		return 'error: ' + error;
+		return 'error liking unliked: ' + error;
 	}
 }
 

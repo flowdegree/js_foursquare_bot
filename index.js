@@ -3,7 +3,7 @@ const twt_bufai7an = require('./controllers/twt_bufai7an');
 const twt_a5tabot = require('./controllers/twt_a5tabot');
 const cron = require('node-cron');
 
-async function doit() {
+async function FSQ_BuFai7an_Autolike() {
 	// const value = await getFriends();
 	// console.log(value.data.response.friends);
 	// const value = await getLastSeen();
@@ -14,33 +14,38 @@ async function doit() {
 	console.log(value);
 }
 
-async function BuFai7anTwitterLiker() {
+async function TWT_BuFai7anLiker() {
 	const hashtag = '#السعودية';
 	const number_of_likes = 10;
 	twt_a5tabot.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
 	//twt_bufai7an.getRateLimits();
 }
 
-async function a5tabotTwitterLiker() {
+async function TWT_a5tabotLiker() {
 	const hashtag = '#السعودية';
 	const number_of_likes = 10;
 	twt_bufai7an.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
 	//twt_bufai7an.getRateLimits();
 }
 
-async function a5tabotReverseAnswer() {
+async function TWT_a5tabotReverseAnswer() {
 	twt_a5tabot.reverseAnswer();
 }
 
 cron.schedule('*/10 * * * *', () => {
 	console.log('Running Every 5 minutes');
-	BuFai7anTwitterLiker();
-	a5tabotTwitterLiker();
+	TWT_BuFai7anLiker();
+	TWT_a5tabotLiker();
 });
 
 cron.schedule('*/10 * * * * *', () => {
 	console.log('Running Every 1 Seconds');
-	a5tabotReverseAnswer();
+	TWT_a5tabotReverseAnswer();
+});
+
+cron.schedule('* * * * *', () => {
+	console.log('Running Every 1 Minute');
+	FSQ_BuFai7an_Autolike();
 });
 
 
