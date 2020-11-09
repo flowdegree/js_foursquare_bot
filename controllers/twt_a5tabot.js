@@ -80,7 +80,7 @@ async function reverseAnswer() {
 	if (tweets.statuses.length > 0) {
 		for (const tweet of tweets.statuses) {
 			let question = tweet.text.replace(new RegExp("\@" + twitter_handle, "ig"), "");
-			question = question.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
+			// question = question.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
 			console.log(question);
 
 			const answer = reverse(question);
