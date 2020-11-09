@@ -67,7 +67,7 @@ class FoursquareAPI {
 		});
 
 		_.defaults(this.config, {
-			'afterTimeStamp': Date.now() - (1 * 24 * 60 * 60 * 1000),
+			'afterTimeStamp': Math.floor(Date.now() / 1000) - (1 * 24 * 60 * 60),
 			'limit': options.limit,
 		});
 

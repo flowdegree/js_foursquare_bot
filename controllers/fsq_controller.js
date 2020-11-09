@@ -34,6 +34,7 @@ async function getRecent(options) {
 async function likeUnliked(options) {
 	try {
 		const recents = await getRecent(options);
+		console.log(recents);
 		recents.data.response.recent.forEach(checkin => {
 			if(!checkin.like) {
 				console.log(checkin.id);

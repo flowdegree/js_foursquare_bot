@@ -62,5 +62,5 @@ cron.schedule('* * * * *', () => {
 // });
 
 
-//console.log(api.likeUnliked());
+//console.log(FSQ_BuFai7an_Autolike());
 
