@@ -9,7 +9,7 @@ class FoursquareAPI {
 			'm': 'swarm',
 			'v': '20200917',
 			// A random coordinate to use between calls imitating regular behavior
-			'll': '26.30' + this.between(340000000000, 499999999999) + ',50.1' + this.between(2870000000000, 3119999999999)
+			'll': '26.30' + this.between(340000000000, 499999999999) + ',50.1' + this.between(2870000000000, 3119999999999),
 		};
 		this.basePath = 'https://api.foursquare.com/v2/';
 	}
@@ -63,12 +63,12 @@ class FoursquareAPI {
 	// returns user timeline after timestamp
 	getRecent(options) {
 		_.defaults(options, {
-			'limit': 60,
+			'limit': '60',
 		});
 
 		_.defaults(this.config, {
-			'afterTimeStamp': Math.floor(Date.now() / 1000) - (1 * 24 * 60 * 60),
-			'limit': options.limit,
+			'afterTimeStamp': (Math.floor(Date.now() / 1000) - (1 * 24 * 60 * 60)).toString(),
+			'limit': options.limit.toString(),
 		});
 
 		return axios.get(this.basePath + 'checkins/recent', { 'params': this.config });
