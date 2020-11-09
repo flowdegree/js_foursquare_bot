@@ -1,27 +1,51 @@
 const { getFriends, getLastSeen, getRecent, likeUnliked } = require('./controllers/fsq_controller');
-
+const twt_bufai7an = require('./controllers/twt_bufai7an');
+const twt_a5tabot = require('./controllers/twt_a5tabot');
+const cron = require('node-cron');
 
 async function doit() {
-	const value = await getFriends();
-	console.log(value.data.response.friends);
-}
-
-async function doit2() {
-	const value = await getLastSeen();
-	console.log(value.data.response.user.lastPassive);
-}
-
-async function doit3() {
-	const value = await getRecent({ limit: 2 });
-	console.log(value.data.response.recent);
-}
-
-async function doit4() {
+	// const value = await getFriends();
+	// console.log(value.data.response.friends);
+	// const value = await getLastSeen();
+	// console.log(value.data.response.user.lastPassive);
+	// const value = await getRecent({ limit: 2 });
+	// console.log(value.data.response.recent);
 	const value = await likeUnliked({ limit: 60 });
 	console.log(value);
 }
 
-doit4();
+async function BuFai7anTwitterLiker() {
+	const hashtag = '#السعودية';
+	const number_of_likes = 10;
+	twt_a5tabot.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
+	//twt_bufai7an.getRateLimits();
+}
+
+async function a5tabotTwitterLiker() {
+	const hashtag = '#السعودية';
+	const number_of_likes = 10;
+	twt_bufai7an.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
+	//twt_bufai7an.getRateLimits();
+}
+
+async function a5tabotReverseAnswer() {
+	twt_a5tabot.reverseAnswer();
+}
+
+cron.schedule('*/10 * * * *', () => {
+	console.log('Running Every 5 minutes');
+	BuFai7anTwitterLiker();
+	a5tabotTwitterLiker();
+});
+
+cron.schedule('* * * * * *', () => {
+	console.log('Running Every 1 minutes');
+	a5tabotReverseAnswer();
+	//BuFai7anTwitterLiker();
+});
+
+
+//doit();
 
 // api.getLastSeen().then(result =>{
 // 	const location = result.response.user.checkins.items[0].venue.location;

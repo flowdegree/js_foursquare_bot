@@ -1,40 +1,27 @@
-const { config } = require('./../assets/config/config.json');
-//This is the main function that will define global variables and reset Google triggers that will run the other functions
+const _ = require('lodash');
+const axios = require('axios').default;
+const querystring = require('querystring');
+
+// This file is not needed if we have a proper library
+
+// const { config } = require('./../assets/config/config.json');
+// This is the main function that will define global variables and reset Google triggers that will run the other functions
+
+
 function start() {
 	// REPLACE THESE DUMMY VALUES
-	var TWITTER_CONSUMER_KEY = config.twitter.mohannad.CONSUMER_KEY;
-	var TWITTER_CONSUMER_SECRET = config.twitter.mohannad.CONSUMER_SECRET;
-	var TWITTER_HANDLE = "A5taBot";
-	var TWITTER_TARGET_HANDLE = "Nejer";
-	var TWITTER_TARGET_HASHTAG = "#أقطع_علاقتي_فيك_إذ";
-	
-	
-	// Be Careful changing anything below this line
-	ScriptProperties.setProperty("TWITTER_CONSUMER_KEY", TWITTER_CONSUMER_KEY);
-	ScriptProperties.setProperty("TWITTER_CONSUMER_SECRET", TWITTER_CONSUMER_SECRET);
-	ScriptProperties.setProperty("TWITTER_HANDLE", TWITTER_HANDLE);
-	ScriptProperties.setProperty("TWITTER_TARGET_HANDLE", TWITTER_TARGET_HANDLE);
-	ScriptProperties.setProperty("TWITTER_TARGET_HASHTAG", TWITTER_TARGET_HASHTAG);
-	ScriptProperties.setProperty("MAX_TWITTER_ID", 0);
-	
-	// Delete exiting triggers, if any
-	reset_triggers();
+	const TWITTER_CONSUMER_KEY = config.twitter.mohannad.CONSUMER_KEY;
+	const TWITTER_CONSUMER_SECRET = config.twitter.mohannad.CONSUMER_SECRET;
+	const TWITTER_HANDLE = "A5taBot";
+	const TWITTER_TARGET_HANDLE = "Nejer";
+	const TWITTER_TARGET_HASHTAG = "#أقطع_علاقتي_فيك_إذ";
+	let MAX_TWITTER_ID = 0;
 	
 	//Add a trigger
 	ScriptApp.newTrigger("follow_followers_back").timeBased().everyMinutes(1).create();
 	//ScriptApp.newTrigger("follow").timeBased().everyHours(6).create();
 	ScriptApp.newTrigger("fetchTweets").timeBased().everyMinutes(1).create();
 	ScriptApp.newTrigger("favorite").timeBased().everyMinutes(1).create();
-}
-
-function unfollow_inactive_followings()
-{
-	//Check people you follow
-	//Get following
-	var my_id = ScriptProperties.getProperty("TWITTER_HANDLE");
-	var my_followings = get_followings(my_id);
-	Logger.log("Finished getting followings");
-	
 }
 
 //Function to do requests
@@ -77,6 +64,7 @@ function favorite() {
 		for (var i=tweets.length-1; i>=0; i--) {
 			// 2- Inititate favorite request
 			var fav_data = do_request("https://api.twitter.com/1.1/favorites/create.json?id="+tweets[i].id_str,"POST");
+			
 		}
 	}
 }
