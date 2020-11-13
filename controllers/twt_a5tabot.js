@@ -1,14 +1,11 @@
 const _ = require('lodash');
 const path = require('path');
-
-
 const fs = require('fs');
 const config_file_name = '../assets/config/config.json';
-const {
-	config
-} = require(config_file_name);
+const {	config } = require(config_file_name);
 
 const Twitter = require('twitter');
+
 const twitter_handle = 'a5tabot';
 
 const client = new Twitter({
@@ -17,11 +14,6 @@ const client = new Twitter({
 	access_token_key: config.twitter.a5tabot.ACCESS_TOKEN,
 	access_token_secret: config.twitter.a5tabot.ACCESS_SECRET,
 });
-
-// client.get(path, params, callback);
-// client.post(path, params, callback);
-// client.stream(path, params, callback);
-
 
 async function likeHashtag(options) {
 	_.defaults(options, {
@@ -40,7 +32,7 @@ async function likeHashtag(options) {
 
 				const result = await client.post('favorites/create', {
 					id: tweet.id_str,
-					count: options.count
+					count: options.count,
 				});
 				console.log(result.id_str);
 
@@ -48,7 +40,8 @@ async function likeHashtag(options) {
 					break;
 				}
 				counter++;
-			} catch (error) {
+			}
+			catch (error) {
 				console.log(error);
 
 			}
@@ -60,7 +53,8 @@ async function getRateLimits() {
 	try {
 		const result = await client.get('application/rate_limit_status', {});
 		console.log(JSON.stringify(result, null, 4));
-	} catch (error) {
+	}
+	catch (error) {
 		console.log(error);
 	}
 }
@@ -79,7 +73,7 @@ async function reverseAnswer() {
 
 	if (tweets.statuses.length > 0) {
 		for (const tweet of tweets.statuses) {
-			let question = tweet.text.replace(new RegExp("\@" + twitter_handle, "ig"), "");
+			const question = tweet.text.replace(new RegExp("\@" + twitter_handle, "ig"), "");
 			// question = question.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
 			console.log(question);
 
@@ -98,10 +92,11 @@ async function reverseAnswer() {
 				if (result) {
 					config.twitter.a5tabot.last_reversed = tweet.id_str;
 					saveScript(config_file_name, {
-						'config': config
+						'config': config,
 					});
 				}
-			} catch (error) {
+			}
+			catch (error) {
 				console.log(error);
 			}
 
@@ -112,25 +107,24 @@ async function reverseAnswer() {
 function saveScript(filename, object) {
 	fs.writeFile(__dirname + path.sep + filename, JSON.stringify(object, null, 4), function writeJSON(err) {
 		if (err) return console.log(err);
-		// console.log(JSON.stringify(object, null, 4));
 		console.log('writing to ' + filename);
 	});
 
 }
 
-async function followFollowers() {}
+async function followFollowers() { return;}
 
 function unethical_answer(s) {
 	//    /(\w)\w*$/
-	Logger.log(s.match(/^.*\s+(\w)\w+$/)[1]);
-	Logger.log(s.match(/([اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ])[اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ]*$/)[1]);
+	console.log(s.match(/^.*\s+(\w)\w+$/)[1]);
+	console.log(s.match(/([اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ])[اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ]*$/)[1]);
 	s = s.match(/^.*\s+(\w)\w+$/)[1];
-	return s + ", هاااااا؟ ;)";
+	return s + ', هاااااا؟ ;)';
 }
 
-//Random function that reverses a string
+// Random function that reverses a string
 function reverse(s) {
-	return s.split("").reverse().join("");
+	return s.split('').reverse().join('');
 }
 
 module.exports.reverseAnswer = reverseAnswer;

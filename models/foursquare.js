@@ -33,11 +33,12 @@ class FoursquareAPI {
 	getLastSeen(options = {}) {
 		_.defaults(options, {
 			'user_id': 'self',
+			'limit': 100,
 		});
 
 		_.defaults(this.config, {
-			'USER_ID': 'self',
-			'limit': 100,
+			'USER_ID': options.user_id,
+			'limit': options.limit,
 		});
 
 		return this.getUser(options);
@@ -62,16 +63,22 @@ class FoursquareAPI {
 
 	// returns user timeline after timestamp
 	getRecent(options) {
+		
 		_.defaults(options, {
 			'limit': '60',
 		});
 
 		_.defaults(this.config, {
 			'afterTimeStamp': (Math.floor(Date.now() / 1000) - (1 * 24 * 60 * 60)).toString(),
-			'limit': options.limit.toString(),
+			'limit': options.limit,
 		});
 
-		return axios.get(this.basePath + 'checkins/recent', { 'params': this.config, paramsSerializer: params => { return querystring.stringify(params)} });
+		if(options.ll) {
+			console.log('found location');
+			this.config.ll = options.ll;
+		}
+
+		return axios.get(this.basePath + 'checkins/recent', { 'params': this.config, paramsSerializer: params => { return querystring.stringify(params);} });
 	}
 
 
@@ -132,7 +139,6 @@ class FoursquareAPI {
 
 	likeUnliked() {
 		const succeeded = [];
-
 
 		this.getRecent().then(result => {
 			result.response.recent.forEach(element => {

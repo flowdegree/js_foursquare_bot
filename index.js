@@ -47,20 +47,3 @@ cron.schedule('* * * * *', () => {
 	console.log('Running Every 1 Minute');
 	FSQ_BuFai7an_Autolike();
 });
-
-
-//doit();
-
-// api.getLastSeen().then(result =>{
-// 	const location = result.response.user.checkins.items[0].venue.location;
-// 	if(location) {
-// 		api.ll = location.lat + ',' + location.lng;
-// 	}
-// 	console.log('done with getLastSeen');
-// }).catch(() =>{
-// 	console.log('failed to get last seen');
-// });
-
-
-//console.log(FSQ_BuFai7an_Autolike());
-
