@@ -1,5 +1,8 @@
 const _ = require('lodash');
-const { config } = require('../assets/config/config.json');
+const path = require('path');
+const fs = require('fs');
+const config_file_name = '../assets/config/config.json';
+const {	config } = require(config_file_name);
 const Twitter = require('twitter');
 
 const client = new Twitter({
@@ -45,6 +48,54 @@ async function likeHashtag(options) {
 	}
 }
 
+async function updateHashtags() {
+	const DAMMAM_WOEID = '1939574';
+	const trends = await client.get('trends/place', { id: DAMMAM_WOEID });
+	if (trends[0].trends) {
+		config.twitter.mohannad.trends = trends[0].trends;
+		saveScript(config_file_name, { 'config': config });
+	}
+	// console.log(trends[0].trends);
+
+	return 'successfully updated trends';
+}
+
+async function likeRandomHashtags(options) {
+	_.defaults(options, {
+		'number_of_likes': 10,
+		'number_of_hashtags': 5,
+	});
+
+	const hashtags = config.twitter.mohannad.trends;
+
+	for(let i = 0; i < options.number_of_hashtags; i++) {
+		console.log('Getting tweets from: ' + hashtags[i].name);
+		const tweets = await client.get('search/tweets', { 'count': options.number_of_likes, 'q': hashtags[i].query });
+		console.log('Got: ' + tweets.statuses.length + ' tweets');
+
+		if(tweets.statuses) {
+			let counter = 1;
+			for(const tweet of tweets.statuses) {
+				try {
+					await new Promise(r => setTimeout(r, 1000));
+					console.log('trying to like ' + tweet.text.substring(0, 40));
+
+					const result = await client.post('favorites/create', { id: tweet.id_str, count: options.count });
+					console.log(result.id_str);
+
+					if(counter >= options.number_of_likes) {
+						break;
+					}
+					counter++;
+				}
+				catch (error) {
+					console.log(error);
+				}
+			}
+		}
+	}
+}
+
 async function getRateLimits() {
 	try {
 		const result = await client.get('application/rate_limit_status', {});
@@ -56,6 +107,7 @@ async function getRateLimits() {
 }
 
 async function followFollowers() {
+	return;
 }
 
 function unethical_answer(s) {
@@ -66,10 +118,22 @@ function unethical_answer(s) {
 	return s + ", هاااااا؟ ;)";
 }
 
-//Random function that reverses a string
+// Random function that reverses a string
 function reverse(s) {
 	return s.split("").reverse().join("");
 }
 
+
+function saveScript(filename, object) {
+	fs.writeFile(__dirname + path.sep + filename, JSON.stringify(object, null, 4), function writeJSON(err) {
+		if (err) return console.log(err);
+		console.log('writing to ' + filename);
+	});
+
+}
+
 module.exports.likeHashtag = likeHashtag;
 module.exports.getRateLimits = getRateLimits;
+module.exports.likeRandomHashtags = likeRandomHashtags;
+module.exports.updateHashtags = updateHashtags;
+

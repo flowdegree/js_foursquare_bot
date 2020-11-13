@@ -17,24 +17,38 @@ async function FSQ_BuFai7an_Autolike() {
 async function TWT_BuFai7anLiker() {
 	const hashtag = '#السعودية';
 	const number_of_likes = 10;
-	twt_a5tabot.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
-	//twt_bufai7an.getRateLimits();
+	twt_bufai7an.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
+	// twt_bufai7an.getRateLimits();
+}
+
+async function TWT_BuFai7anRandomLiker() {
+	const number_of_likes = 4;
+	const number_of_hashtags = 10;
+
+	// number_of_likes * number_of_hashtags 
+	twt_bufai7an.likeRandomHashtags({ number_of_likes: number_of_likes, number_of_hashtags: number_of_hashtags });
 }
 
 async function TWT_a5tabotLiker() {
 	const hashtag = '#السعودية';
 	const number_of_likes = 10;
-	twt_bufai7an.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
-	//twt_bufai7an.getRateLimits();
+	twt_a5tabot.likeHashtag({ q: hashtag, number_of_likes: number_of_likes });
+	// twt_bufai7an.getRateLimits();
 }
 
 async function TWT_a5tabotReverseAnswer() {
 	twt_a5tabot.reverseAnswer();
 }
 
-cron.schedule('*/10 * * * *', () => {
-	console.log('Running Every 5 minutes');
-	TWT_BuFai7anLiker();
+function TWT_BuFai7anUpdateHashtags() {
+	twt_bufai7an.updateHashtags();
+}
+
+cron.schedule('30 * * * *', () => {
+	// once per hour, should not exceed 41 likes
+	console.log('Running Every 1 hour @ 30 minutes');
+	TWT_BuFai7anUpdateHashtags();
+	TWT_BuFai7anRandomLiker();
 	TWT_a5tabotLiker();
 });
 
@@ -43,7 +57,7 @@ cron.schedule('*/10 * * * * *', () => {
 	TWT_a5tabotReverseAnswer();
 });
 
-cron.schedule('* * * * *', () => {
-	console.log('Running Every 1 Minute');
+cron.schedule('*/10 * * * *', () => {
+	console.log('Running Every 10 Minute');
 	FSQ_BuFai7an_Autolike();
 });

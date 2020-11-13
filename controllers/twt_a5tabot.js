@@ -3,7 +3,6 @@ const path = require('path');
 const fs = require('fs');
 const config_file_name = '../assets/config/config.json';
 const {	config } = require(config_file_name);
-
 const Twitter = require('twitter');
 
 const twitter_handle = 'a5tabot';
