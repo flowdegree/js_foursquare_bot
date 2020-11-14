@@ -26,9 +26,14 @@ async function answer() {
 	api.haaAnswer({ 'twitter_handle': twitter_handle });
 }
 
+async function addHashtagUsersToList(options) {
+	return api.addHashtagUsersToList(options);
+}
+
 module.exports.answer = answer;
 module.exports.likeHashtag = likeHashtag;
 module.exports.updateHashtags = updateHashtags;
 module.exports.likeRandomHashtags = likeRandomHashtags;
 module.exports.getRateLimits = getRateLimits;
 module.exports.raidHaaHashtags = raidHaaHashtags;
+module.exports.addHashtagUsersToList = addHashtagUsersToList;
