@@ -164,6 +164,10 @@ class TwitterAPI {
 		if (tweets.statuses.length > 0) {
 			for (const tweet of tweets.statuses) {
 				if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
+					this.configuration.last_reversed = tweet.id_str;
+					this.saveScript(config_file_name, {
+						'config': config,
+					});
 					break;
 				}
 				// Clean the string
@@ -216,6 +220,10 @@ class TwitterAPI {
 			if (tweets.statuses.length > 0) {
 				for (const tweet of tweets.statuses) {
 					if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
+						this.configuration.last_reversed = tweet.id_str;
+						this.saveScript(config_file_name, {
+							'config': config,
+						});
 						break;
 					}
 					// Clean the string
@@ -269,6 +277,10 @@ class TwitterAPI {
 		if (tweets.statuses.length > 0) {
 			for (const tweet of tweets.statuses) {
 				if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
+					this.configuration.last_reversed = tweet.id_str;
+					this.saveScript(config_file_name, {
+						'config': config,
+					});
 					break;
 				}
 				// Clean the string
