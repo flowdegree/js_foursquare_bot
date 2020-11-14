@@ -163,7 +163,7 @@ class TwitterAPI {
 
 		if (tweets.statuses.length > 0) {
 			for (const tweet of tweets.statuses) {
-				if(tweet.user.screen_name == options.twitter_handle) {
+				if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
 					break;
 				}
 				// Clean the string
@@ -215,7 +215,7 @@ class TwitterAPI {
 
 			if (tweets.statuses.length > 0) {
 				for (const tweet of tweets.statuses) {
-					if(tweet.user.screen_name == options.twitter_handle) {
+					if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
 						break;
 					}
 					// Clean the string
@@ -268,7 +268,7 @@ class TwitterAPI {
 
 		if (tweets.statuses.length > 0) {
 			for (const tweet of tweets.statuses) {
-				if(tweet.user.screen_name == options.twitter_handle) {
+				if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
 					break;
 				}
 				// Clean the string
