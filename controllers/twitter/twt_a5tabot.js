@@ -1,6 +1,6 @@
-const twt = require('../models/twitter.js');
-const twitter_handle = 'BuFai7an';
-const api = new twt({ name: 'mohannad' });
+const twt = require('../../models/twitter.js');
+const twitter_handle = 'a5tabot';
+const api = new twt({ name: twitter_handle });
 
 async function likeHashtag(options) {
 	return api.likeHashtag(options);
@@ -18,13 +18,12 @@ async function getRateLimits(options) {
 	return api.getRateLimits(options);
 }
 
-async function addHashtagUsersToList(options) {
-	return api.addHashtagUsersToList(options);
+async function answer() {
+	api.reverseAnswer({ 'twitter_handle': twitter_handle });
 }
 
+module.exports.answer = answer;
 module.exports.likeHashtag = likeHashtag;
-module.exports.getRateLimits = getRateLimits;
-module.exports.likeRandomHashtags = likeRandomHashtags;
 module.exports.updateHashtags = updateHashtags;
-module.exports.addHashtagUsersToList = addHashtagUsersToList;
-
+module.exports.likeRandomHashtags = likeRandomHashtags;
+module.exports.getRateLimits = getRateLimits;

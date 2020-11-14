@@ -224,7 +224,7 @@ class TwitterAPI {
 					const result = await this.client.post('statuses/update', reply);
 
 					if (result) {
-						this.configuration.last_reversed = tweet.id_str;
+						this.configuration.last_haad = tweet.id_str;
 						this.saveScript(config_file_name, {
 							'config': config,
 						});
