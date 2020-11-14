@@ -155,6 +155,7 @@ class TwitterAPI {
 		_.defaults(options, {
 			'q': phrase,
 			'since_id': this.configuration.last_reversed,
+			tweet_mode: 'extended',
 		});
 
 		const tweets = await this.client.get('search/tweets', options);
@@ -198,6 +199,7 @@ class TwitterAPI {
 		_.defaults(options, {
 			'number_of_replies': 10,
 			'number_of_hashtags': 5,
+			tweet_mode: 'extended',
 			'twitter_handle': this.cnf.name,
 		});
 
@@ -253,6 +255,7 @@ class TwitterAPI {
 
 		_.defaults(options, {
 			'q': phrase,
+			tweet_mode: 'extended',
 			'since_id': this.configuration.last_haad,
 		});
 
