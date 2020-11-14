@@ -255,9 +255,10 @@ class TwitterAPI {
 	// Haaaa? answer
 	add_haa(s) {
 		//    /(\w)\w*$/
-		console.log(s.match(/^.*\s+(\w)\w+$/)[1]);
-		console.log(s.match(/([اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ])[اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ]*$/)[1]);
-		s = s.match(/^.*\s+(\w)\w+$/)[1];
+		// Remove whitespaces
+		const regex_last_word = /([اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ])[اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ]*$/;
+		console.log(s.match(regex_last_word)[0]);
+		s = s.match(regex_last_word)[0];
 		return s + ', هاااااا؟ ;)';
 	}
 
