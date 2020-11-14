@@ -163,7 +163,9 @@ class TwitterAPI {
 
 		if (tweets.statuses.length > 0) {
 			for (const tweet of tweets.statuses) {
-
+				if(tweet.user.screen_name == options.twitter_handle) {
+					break;
+				}
 				// Clean the string
 				const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 				console.log(question);
@@ -213,7 +215,9 @@ class TwitterAPI {
 
 			if (tweets.statuses.length > 0) {
 				for (const tweet of tweets.statuses) {
-
+					if(tweet.user.screen_name == options.twitter_handle) {
+						break;
+					}
 					// Clean the string
 					const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 					console.log(question);
@@ -264,7 +268,9 @@ class TwitterAPI {
 
 		if (tweets.statuses.length > 0) {
 			for (const tweet of tweets.statuses) {
-
+				if(tweet.user.screen_name == options.twitter_handle) {
+					break;
+				}
 				// Clean the string
 				const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 				console.log(question);
