@@ -171,7 +171,7 @@ class TwitterAPI {
 				console.log(answer);
 
 				const reply = {
-					status: answer,
+					status: '@' + tweet.user.screen_name + ' ' + answer,
 					in_reply_to_status_id: tweet.id_str,
 					auto_populate_reply_metadata: true,
 				};
@@ -219,7 +219,7 @@ class TwitterAPI {
 					console.log(answer);
 
 					const reply = {
-						status: answer,
+						status: '@' + tweet.user.screen_name + ' ' + answer,
 						in_reply_to_status_id: tweet.id_str,
 						auto_populate_reply_metadata: true,
 					};
@@ -268,7 +268,7 @@ class TwitterAPI {
 				console.log(answer);
 
 				const reply = {
-					status: answer,
+					status: '@' + tweet.user.screen_name + ' ' + answer,
 					in_reply_to_status_id: tweet.id_str,
 					auto_populate_reply_metadata: true,
 				};
