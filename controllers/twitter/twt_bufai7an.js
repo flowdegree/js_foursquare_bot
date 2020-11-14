@@ -1,5 +1,5 @@
 const twt = require('../../models/twitter.js');
-const twitter_handle = 'BuFai7an';
+const twitter_handle = 'bufai7an';
 const api = new twt({ name: twitter_handle });
 
 async function likeHashtag(options) {

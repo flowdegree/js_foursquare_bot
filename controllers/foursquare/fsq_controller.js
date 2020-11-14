@@ -1,5 +1,5 @@
-const fsq = require('../models/foursquare.js');
-const config_file_name = '../assets/config/config.json';
+const fsq = require('../../models/foursquare.js');
+const config_file_name = '../../assets/config/config.json';
 const { config } = require(config_file_name);
 
 const api = new fsq({ api_key: config.foursquare.Mohannad.token });

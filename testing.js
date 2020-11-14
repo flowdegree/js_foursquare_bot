@@ -1,6 +1,7 @@
-const { getFriends, getLastSeen, getRecent, likeUnliked } = require('./controllers/fsq_controller');
-const twt_bufai7an = require('./controllers/twt_bufai7an');
-const twt_a5tabot = require('./controllers/twt_a5tabot');
+const fsq_bufai7an = require('./controllers/foursquare/fsq_controller');
+const twt_bufai7an = require('./controllers/twitter/twt_bufai7an');
+const twt_a5tabot = require('./controllers/twitter/twt_a5tabot');
+const twt_notkwayes = require('./controllers/twitter/twt_not_kwayes');
 const cron = require('node-cron');
 
 async function FSQ_BuFai7an_Autolike() {
@@ -27,4 +28,9 @@ function TWT_BuFai7anUpdateHashtags() {
 	twt_bufai7an.updateHashtags();
 }
 
-twt_bufai7an.addHashtagUsersToList();
+// twt_bufai7an.addHashtagUsersToList();
+
+
+twt_bufai7an.updateHashtags();
+twt_a5tabot.updateHashtags();
+twt_notkwayes.updateHashtags();
