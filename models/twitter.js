@@ -308,11 +308,17 @@ class TwitterAPI {
 	// Haaaa? answer
 	add_haa(s) {
 		//    /(\w)\w*$/
-		// Remove whitespaces
-		const regex_last_word = /([اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ])[اأإآبتثجحخدذرزسشصضطظعغفقكلمنهويءئوةـىًٌٍَُِّ]*$/;
-		console.log(s.match(regex_last_word)[0]);
-		s = s.match(regex_last_word)[0];
-		return s + ', هاااااا؟ 😏';
+		// Remove new lines
+		s = s.replace(/[\r\n]+/g, ' ');
+		s = s.replace(/[\r]+/g, ' ');
+		s = s.replace(/[\n]+/g, ' ');
+
+		// Remove additional حركات if any
+		s = s.replace(/[ـًٌٍَُِّْ]+/g, '');
+
+		const n = s.split(' ');
+		const lastword = n[n.length - 1];
+		return lastword + ', هاااااا؟ 😏';
 	}
 
 }
