@@ -9,7 +9,7 @@ const Twitter = require('twitter');
 class TwitterAPI {
 
 	constructor(cnf) {
-		this.cnf.name = cnf.name;
+		this.cnf = cnf;
 		this.configuration = eval('config.twitter.' + cnf.name);
 
 		this.client = new Twitter({
