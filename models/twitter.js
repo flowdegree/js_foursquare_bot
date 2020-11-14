@@ -245,12 +245,14 @@ class TwitterAPI {
 	async haaAnswer(options) {
 		_.defaults(options, {
 			'twitter_handle': this.cnf.name,
-			'q': phrase,
-			'since_id': this.configuration.last_haad,
 		});
 
 		const phrase = 'to:' + options.twitter_handle;
 
+		_.defaults(options, {
+			'q': phrase,
+			'since_id': this.configuration.last_haad,
+		});
 
 		const tweets = await this.client.get('search/tweets', options);
 		console.log('Found ' + tweets.statuses.length + ' sent to ' + options.twitter_handle);
