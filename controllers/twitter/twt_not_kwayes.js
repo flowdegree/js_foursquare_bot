@@ -14,6 +14,10 @@ async function likeRandomHashtags(options) {
 	return api.likeRandomHashtags(options);
 }
 
+async function raidHaaHashtags(options) {
+	return api.raidHaaHashtags(options);
+}
+
 async function getRateLimits(options) {
 	return api.getRateLimits(options);
 }
@@ -27,3 +31,4 @@ module.exports.likeHashtag = likeHashtag;
 module.exports.updateHashtags = updateHashtags;
 module.exports.likeRandomHashtags = likeRandomHashtags;
 module.exports.getRateLimits = getRateLimits;
+module.exports.raidHaaHashtags = raidHaaHashtags;

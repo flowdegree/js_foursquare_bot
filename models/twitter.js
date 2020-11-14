@@ -9,6 +9,7 @@ const Twitter = require('twitter');
 class TwitterAPI {
 
 	constructor(cnf) {
+		this.cnf.name = cnf.name;
 		this.configuration = eval('config.twitter.' + cnf.name);
 
 		this.client = new Twitter({
@@ -117,7 +118,6 @@ class TwitterAPI {
 		_.defaults(options, {
 			'number_of_adds': 10,
 			'number_of_hashtags': 5,
-			'slug': 'special',
 		});
 
 		const hashtags = this.configuration.trends;
@@ -193,13 +193,64 @@ class TwitterAPI {
 		}
 	}
 
-	async haaAnswer(options) {
-		const phrase = 'to:' + options.twitter_handle;
-
+	async raidHaaHashtags(options) {
 		_.defaults(options, {
+			'number_of_replies': 10,
+			'number_of_hashtags': 5,
+			'twitter_handle': this.cnf.name,
+		});
+
+		const hashtags = this.configuration.trends;
+
+		for(let i = 0; i < options.number_of_hashtags; i++) {
+			console.log(`Getting tweets from: ${hashtags[i].name} Maximum ${options.number_of_replies} tweets`);
+			const tweets = await this.client.get('search/tweets', { 'count': options.number_of_replies, 'q': hashtags[i].query });
+			console.log(`Got: ${tweets.statuses.length} tweets`);
+
+
+			if (tweets.statuses.length > 0) {
+				for (const tweet of tweets.statuses) {
+
+					// Clean the string
+					const question = tweet.text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
+					console.log(question);
+
+					const answer = this.add_haa(question);
+					console.log(answer);
+
+					const reply = {
+						status: answer,
+						in_reply_to_status_id: tweet.id_str,
+						auto_populate_reply_metadata: true,
+					};
+
+					try {
+						const result = await this.client.post('statuses/update', reply);
+
+						if (result) {
+							this.configuration.last_haad = tweet.id_str;
+							this.saveScript(config_file_name, {
+								'config': config,
+							});
+						}
+					}
+					catch (error) {
+						console.log(error);
+					}
+				}
+			}
+		}
+	}
+
+	async haaAnswer(options) {
+		_.defaults(options, {
+			'twitter_handle': this.cnf.name,
 			'q': phrase,
 			'since_id': this.configuration.last_haad,
 		});
+
+		const phrase = 'to:' + options.twitter_handle;
+
 
 		const tweets = await this.client.get('search/tweets', options);
 		console.log('Found ' + tweets.statuses.length + ' sent to ' + options.twitter_handle);
