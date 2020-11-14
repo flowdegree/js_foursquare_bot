@@ -164,7 +164,7 @@ class TwitterAPI {
 			for (const tweet of tweets.statuses) {
 
 				// Clean the string
-				const question = tweet.text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
+				const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 				console.log(question);
 
 				const answer = this.reverse(question);
@@ -173,6 +173,7 @@ class TwitterAPI {
 				const reply = {
 					status: '@' + tweet.user.screen_name + ' ' + answer,
 					in_reply_to_status_id: tweet.id_str,
+					tweet_mode: 'extended',
 					auto_populate_reply_metadata: true,
 				};
 
@@ -212,7 +213,7 @@ class TwitterAPI {
 				for (const tweet of tweets.statuses) {
 
 					// Clean the string
-					const question = tweet.text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
+					const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 					console.log(question);
 
 					const answer = this.add_haa(question);
@@ -221,6 +222,7 @@ class TwitterAPI {
 					const reply = {
 						status: '@' + tweet.user.screen_name + ' ' + answer,
 						in_reply_to_status_id: tweet.id_str,
+						tweet_mode: 'extended',
 						auto_populate_reply_metadata: true,
 					};
 
@@ -261,7 +263,7 @@ class TwitterAPI {
 			for (const tweet of tweets.statuses) {
 
 				// Clean the string
-				const question = tweet.text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
+				const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 				console.log(question);
 
 				const answer = this.add_haa(question);
@@ -270,6 +272,7 @@ class TwitterAPI {
 				const reply = {
 					status: '@' + tweet.user.screen_name + ' ' + answer,
 					in_reply_to_status_id: tweet.id_str,
+					tweet_mode: 'extended',
 					auto_populate_reply_metadata: true,
 				};
 
