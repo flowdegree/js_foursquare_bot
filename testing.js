@@ -27,5 +27,4 @@ function TWT_BuFai7anUpdateHashtags() {
 	twt_bufai7an.updateHashtags();
 }
 
-TWT_BuFai7anUpdateHashtags();
-
+twt_bufai7an.addHashtagUsersToList();
