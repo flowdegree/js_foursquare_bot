@@ -1,4 +1,4 @@
-const fsq_bufai7an = require('./controllers/foursquare/fsq_controller');
+const fsq_bufai7an = require('./controllers/foursquare/fsq_bufai7an');
 const twt_bufai7an = require('./controllers/twitter/twt_bufai7an');
 const twt_a5tabot = require('./controllers/twitter/twt_a5tabot');
 const twt_notkwayes = require('./controllers/twitter/twt_not_kwayes');
@@ -30,7 +30,4 @@ function TWT_BuFai7anUpdateHashtags() {
 
 // twt_bufai7an.addHashtagUsersToList();
 
-
-twt_bufai7an.updateHashtags();
-twt_a5tabot.updateHashtags();
-twt_notkwayes.updateHashtags();
+fsq_bufai7an.likeUnliked({ limit: 60 });
