@@ -174,7 +174,7 @@ class TwitterAPI {
 				const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 				console.log(question);
 
-				const answer = this.reverse(question);
+				const answer = this.reverse_text(question);
 				console.log(answer);
 
 				const reply = {
@@ -326,6 +326,12 @@ class TwitterAPI {
 
 	// reverse a text
 	reverse_text(s) {
+		s = s.replace(/[\r\n]+/g, ' ');
+		s = s.replace(/[\r]+/g, ' ');
+		s = s.replace(/[\n]+/g, ' ');
+
+		// Remove additional حركات if any
+		s = s.replace(/[ـًٌٍَُِّْ]+/g, '');
 		return s.split('').reverse().join('');
 	}
 
