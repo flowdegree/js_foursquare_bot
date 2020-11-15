@@ -171,6 +171,7 @@ class TwitterAPI {
 					break;
 				}
 				// Clean the string
+				if(!tweet.full_text) { tweet.full_text = tweet.text; }
 				const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 				console.log(question);
 
@@ -227,6 +228,8 @@ class TwitterAPI {
 						break;
 					}
 					// Clean the string
+					if(!tweet.full_text) { tweet.full_text = tweet.text; }
+
 					const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 					console.log(question);
 
@@ -284,6 +287,7 @@ class TwitterAPI {
 					break;
 				}
 				// Clean the string
+				if(!tweet.full_text) { tweet.full_text = tweet.text; }
 				const question = tweet.full_text.replace(new RegExp('\@' + options.twitter_handle, 'ig'), '');
 				console.log(question);
 
