@@ -9,6 +9,15 @@
  3- set the intervals for each function to run
  4- if you want, use models to setup new services apis calls and create play functions inside controller, then call them from index.
 
-## Not Supported
+## DO NOT ASK
 
- Extensive details will not be provided into this repo as it is for advanced users only, if you can't understand it, don't use it.
+ > Extensive details will not be provided into this repo as it is for advanced users only, if you can't understand it, don't use it.
+
+## Uses
+
+- Lodash
+- Node-cron
+- axios
+- querystring
+- path
+- Twitter
