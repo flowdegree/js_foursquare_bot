@@ -1,0 +1,1 @@
+pm2 delete mohannad_crons; git pull; pm2 start index.js --name mohannad_crons; pm2 save; pm2 logs
