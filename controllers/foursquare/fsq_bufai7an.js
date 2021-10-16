@@ -95,24 +95,29 @@ async function likeUnliked(options) {
 
 // Code to check-into a location if it was not checked-into within last x minutes
 
-async function checkInto(options) {
+async function checkInto(options = {}) {
 	try {
 		// results Get last checkins within X minutes
 		// 59 minutes
 		const the_minutes = (Math.floor(Date.now() / 1000) - (59 * 60)).toString();
-
 		const last_checkins = await getCheckins({ 'limit': 100, 'afterTimestamp': the_minutes });
-		// if the new location exists within the results array end
+		
+        // if the new location exists within the results array end
 		let _exists = false;
-		const self = this;
+
 		last_checkins.data.response.checkins.items.forEach(checkin => {
-			if (checkin.id == self.options.location_id) {
+			if (checkin.id == options.location_id) {
 				_exists = true;
 				return;
-			}
-			
-		} );
+			}			
+		});
+        
+        if(_exists){
+            return 'no need to checkin, already checked in';
+        }
+
 		// else
+
 		// check-in
 	}
 	catch (error) {

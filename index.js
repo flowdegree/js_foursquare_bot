@@ -10,8 +10,8 @@ async function FSQ_BuFai7an_Autolike() {
 	await fsq_bufai7an.likeUnliked({ limit: 59 });
 }
 
-async function FSQ_BuFai7an_CheckInto() {
-	await fsq_bufai7an.checkInto();
+async function FSQ_BuFai7an_CheckInto(options) {
+	await fsq_bufai7an.checkInto(options);
 }
 
 cron.schedule('*/30 * * * *', () => {
@@ -34,7 +34,7 @@ cron.schedule('*/20 * * * * *', () => {
 	//console.log('Running Every 20 Seconds');
 	//twt_a5tabot.answer();
 	// twt_notkwayes.answer();
-	FSQ_BuFai7an_CheckInto();
+	FSQ_BuFai7an_CheckInto({location_id : '5c1d4d037b385f002ca392ef'});
     FSQ_BuFai7an_Autolike();
 });
 
