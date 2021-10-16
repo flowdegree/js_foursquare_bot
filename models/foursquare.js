@@ -33,9 +33,9 @@ class FoursquareAPI {
 	getLastSeen(options = {}) {
 		_.defaults(options, {
 			'user_id': 'self',
+            'something': 'else',
 			'limit': 100,
 		});
-
 		_.defaults(this.config, {
 			'USER_ID': options.user_id,
 			'limit': options.limit,
@@ -63,15 +63,19 @@ class FoursquareAPI {
 
 	// returns user timeline after timestamp
 	getRecent(options) {
-		
+        console.log('before defaults in model call', options)
 		_.defaults(options, {
-			'limit': '60',
+			'limit': 60,
 		});
-
+        console.log('after defaults in model call', options)
 		_.defaults(this.config, {
 			'afterTimeStamp': (Math.floor(Date.now() / 1000) - (1 * 24 * 60 * 60)).toString(),
 			'limit': options.limit,
 		});
+        console.log('options.limit',options.limit)
+        console.log('before defaults in model call', options)
+        console.log(this.config.limit)
+        console.log('the config var', this.config)
 
 		if(options.ll) {
 			console.log('found location');

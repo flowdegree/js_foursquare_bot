@@ -35,6 +35,7 @@ async function getLastSeen(options) {
 
 async function likeUnliked(options) {
 	try {
+		// Just to get my user recent location.
 		const seen_at = await getLastSeen({ 'limit': 2 });
 		const configurations = {};
 
@@ -43,8 +44,10 @@ async function likeUnliked(options) {
 			// console.log(location);
 			configurations.ll = location.lat + ',' + location.lng;
 		}
-
+		console.log('before controller call', options);
 		const recents = await getRecent({ ...options, 'll': configurations.ll });
+
+		console.log(recents.data.response.length);
 
 		if(recents.data.response.recent.length > 0) {
 			let liked_count = 0;
