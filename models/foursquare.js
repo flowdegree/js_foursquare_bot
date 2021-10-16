@@ -58,24 +58,32 @@ class FoursquareAPI {
 	}
 
 	getCheckins(options = {}) {
-		return options;
+        _.defaults(options, {
+			'user_id': 'self',
+		});
+
+        delete this.config.afterTimeStamp;
+		_.defaults(this.config, {
+			'USER_ID': 'self',
+			'limit': 100,
+			'afterTimestamp': options.afterTimestamp,
+		});
+		return axios.get(this.basePath + 'users/' + options.user_id + '/checkins', { 'params': this.config });
 	}
 
 	// returns user timeline after timestamp
 	getRecent(options) {
-        console.log('before defaults in model call', options)
 		_.defaults(options, {
 			'limit': 60,
 		});
-        console.log('after defaults in model call', options)
+
+        delete this.config.limit;
+
 		_.defaults(this.config, {
 			'afterTimeStamp': (Math.floor(Date.now() / 1000) - (1 * 24 * 60 * 60)).toString(),
 			'limit': options.limit,
 		});
-        console.log('options.limit',options.limit)
-        console.log('before defaults in model call', options)
-        console.log(this.config.limit)
-        console.log('the config var', this.config)
+        
 
 		if(options.ll) {
 			console.log('found location');

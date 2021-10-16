@@ -7,8 +7,11 @@ const twt_notkwayes = require('./controllers/twitter/twt_not_kwayes');
 
 
 async function FSQ_BuFai7an_Autolike() {
-	const value = await fsq_bufai7an.likeUnliked({ limit: 59 });
-	console.log(value);
+	await fsq_bufai7an.likeUnliked({ limit: 59 });
+}
+
+async function FSQ_BuFai7an_CheckInto() {
+	await fsq_bufai7an.checkInto();
 }
 
 cron.schedule('*/30 * * * *', () => {
@@ -31,6 +34,7 @@ cron.schedule('*/20 * * * * *', () => {
 	//console.log('Running Every 20 Seconds');
 	//twt_a5tabot.answer();
 	// twt_notkwayes.answer();
+	FSQ_BuFai7an_CheckInto();
     FSQ_BuFai7an_Autolike();
 });
 

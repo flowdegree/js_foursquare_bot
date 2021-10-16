@@ -23,6 +23,15 @@ function getRecent(options) {
 	}
 }
 
+async function getCheckins(options) {
+	try {
+		return await api.getCheckins(options);
+	}
+	catch (error) {
+		return 'error: ' + error;
+	}
+}
+
 async function getLastSeen(options) {
 	try {
 		return await api.getLastSeen(options);
@@ -66,11 +75,11 @@ async function likeUnliked(options) {
 
 			if(liked_count > 0) {
 				console.log('Liked ' + liked_count + ' checkins');
-				return 'success 1';
+				return 'Liked ' + liked_count + ' checkins';
 			}
 			else{
 				console.log('No recents that are unliked');
-				return 'success 2';
+				return 'No recents that are unliked';
 			}
 
 		}
@@ -84,8 +93,36 @@ async function likeUnliked(options) {
 	}
 }
 
+// Code to check-into a location if it was not checked-into within last x minutes
+
+async function checkInto(options) {
+	try {
+		// results Get last checkins within X minutes
+		// 59 minutes
+		const the_minutes = (Math.floor(Date.now() / 1000) - (59 * 60)).toString();
+
+		const last_checkins = await getCheckins({ 'limit': 100, 'afterTimestamp': the_minutes });
+		// if the new location exists within the results array end
+		let _exists = false;
+		const self = this;
+		last_checkins.data.response.checkins.items.forEach(checkin => {
+			if (checkin.id == self.options.location_id) {
+				_exists = true;
+				return;
+			}
+			
+		} );
+		// else
+		// check-in
+	}
+	catch (error) {
+		return 'error: ' + error;
+	}
+}
+
 
 module.exports.getFriends = getFriends;
 module.exports.getLastSeen = getLastSeen;
 module.exports.getRecent = getRecent;
 module.exports.likeUnliked = likeUnliked;
+module.exports.checkInto = checkInto;
