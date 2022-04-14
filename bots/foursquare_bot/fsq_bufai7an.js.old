@@ -1,60 +1,24 @@
-const fsq = require('../../models/foursquare.js');
+const swarmappapi = require('swarmapp-api');
 const config_file_name = '../../assets/config/config.json';
 const { config } = require(config_file_name);
 
-const api = new fsq({ api_key: config.foursquare.Mohannad.token });
-
-function getFriends() {
-	try {
-		return api.getFriends();
-	}
-	catch (error) {
-		return 'error: ' + error;
-	}
-}
-
-
-function getRecent(options) {
-	try {
-		return api.getRecent(options);
-	}
-	catch (error) {
-		return 'error: ' + error;
-	}
-}
-
-async function getCheckins(options) {
-	try {
-		return await api.getCheckins(options);
-	}
-	catch (error) {
-		return 'error: ' + error;
-	}
-}
-
-async function getLastSeen(options) {
-	try {
-		return await api.getLastSeen(options);
-	}
-	catch (error) {
-		return 'error: ' + error;
-	}
-}
-
+const api = new swarmappapi({ api_key: config.foursquare.Mohannad.token });
 
 async function likeUnliked(options) {
 	try {
 		// Just to get my user recent location.
-		const seen_at = await getLastSeen({ 'limit': 2 });
+		const seen_at = await api.getLastSeen({ 'limit': 2 });
 		const configurations = {};
 
 		const location = seen_at.data.response.user.checkins.items[0].venue.location;
+		
 		if(location) {
 			// console.log(location);
 			configurations.ll = location.lat + ',' + location.lng;
 		}
+
 		console.log('before controller call', options);
-		const recents = await getRecent({ ...options, 'll': configurations.ll });
+		const recents = await api.getRecent({ ...options, 'll': configurations.ll });
 
 		console.log(recents.data.response.length);
 
@@ -94,13 +58,13 @@ async function likeUnliked(options) {
 }
 
 // Code to check-into a location if it was not checked-into within last x minutes
-
 async function checkInto(options = {}) {
 	try {
 		// results Get last checkins within X minutes
 		// 59 minutes
 		const the_minutes = (Math.floor(Date.now() / 1000) - (59 * 60)).toString();
-		const last_checkins = await getCheckins({ 'limit': 100, 'afterTimestamp': the_minutes });
+		
+		const last_checkins = await api.getCheckins({ 'limit': 100, 'afterTimestamp': the_minutes });
 		
         // if the new location exists within the results array end
 		let _exists = false;
@@ -117,7 +81,7 @@ async function checkInto(options = {}) {
         }
 
 		// else
-
+		const result = await api.checkIn(options.location_id);
 		// check-in
 	}
 	catch (error) {
@@ -125,9 +89,5 @@ async function checkInto(options = {}) {
 	}
 }
 
-
-module.exports.getFriends = getFriends;
-module.exports.getLastSeen = getLastSeen;
-module.exports.getRecent = getRecent;
 module.exports.likeUnliked = likeUnliked;
 module.exports.checkInto = checkInto;
