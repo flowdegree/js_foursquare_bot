@@ -10,4 +10,4 @@
 
 ### Run the new image
 
-`$ docker run --name js_twitter_bot -d mo9a7i/js_twitter_bot `
+`$ docker run --name js_twitter_bot -d mo9a7i/js_twitter_bot`
