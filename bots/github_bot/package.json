@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@octokit/rest": "^18.12.0",
+    "js-base64": "^3.7.2",
     "node-cron": "^3.0.0"
   },
   "devDependencies": {},
