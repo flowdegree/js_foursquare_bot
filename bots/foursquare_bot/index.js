@@ -6,6 +6,7 @@ const { config } = require('./config/config.json');
 const timezone = {timezone: "Asia/Riyadh"};
 
 const mohannad_fsq = new swarmappapi({ api_key: config.foursquare.Mohannad.token });
+const hessah_fsq = new swarmappapi({ api_key: config.foursquare.Hessah.token });
 const mohammed_fsq = new swarmappapi({ api_key: config.foursquare.Mohammed.token });
 
 
@@ -23,6 +24,7 @@ cron.schedule('*/10 * * * * *', async () => {
 	// Like unliked every 10 seconds
 	console.log("Running every 10 seconds");
 	await mohannad_fsq.likeUnliked(10);
+    await hessah_fsq.likeUnliked(10);
 });
 
 cron.schedule('0 9 * * 0,1,2,3,4', async () => {
