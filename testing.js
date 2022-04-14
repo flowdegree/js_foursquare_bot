@@ -1,7 +1,7 @@
-const fsq_bufai7an = require('./controllers/foursquare/fsq_bufai7an');
-const twt_bufai7an = require('./controllers/twitter/twt_bufai7an');
-const twt_a5tabot = require('./controllers/twitter/twt_a5tabot');
-const twt_notkwayes = require('./controllers/twitter/twt_not_kwayes');
+// const fsq_bufai7an = require('./controllers/foursquare/fsq_bufai7an');
+// const twt_bufai7an = require('./controllers/twitter/twt_bufai7an');
+// const twt_a5tabot = require('./controllers/twitter/twt_a5tabot');
+// const twt_notkwayes = require('./controllers/twitter/twt_not_kwayes');
 const cron = require('node-cron');
 
 // twt_bufai7an.likeHashtag({ q: '#السعودية', number_of_likes: 10 });
@@ -12,4 +12,4 @@ const cron = require('node-cron');
 // twt_bufai7an.updateHashtags();
 // twt_bufai7an.addHashtagUsersToList();
 
-fsq_bufai7an.likeUnliked({ limit: 60 });
+// fsq_bufai7an.likeUnliked({ limit: 60 });

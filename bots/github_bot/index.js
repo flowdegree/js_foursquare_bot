@@ -1,18 +1,17 @@
 // Scheduler Samples https://crontab.guru/#*_*_*_*_*
 const cron = require('node-cron');
-const fsq_bufai7an = require('./controllers/foursquare/fsq_bufai7an');
-const twt_bufai7an = require('./controllers/twitter/twt_bufai7an');
-const twt_a5tabot = require('./controllers/twitter/twt_a5tabot');
-const twt_notkwayes = require('./controllers/twitter/twt_not_kwayes');
+const { config } = require('./config/config.json');
+import { Octokit } from "@octokit/rest";
 
+const octokit = new Octokit({
+  auth: config.github.mo9a7i.token,
+});
 
-async function FSQ_BuFai7an_Autolike() {
-	await fsq_bufai7an.likeUnliked({ limit: 59 });
-}
-
-async function FSQ_BuFai7an_CheckInto(options) {
-	await fsq_bufai7an.checkInto(options);
-}
+//commit every minute
+cron.schedule('* * * * *', () => {
+	
+});
+ 
 
 cron.schedule('*/30 * * * *', () => {
 	// once per hour, should not exceed 41 likes

@@ -4,8 +4,6 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "axios": "^0.26.1",
-    "lodash": "^4.17.21",
     "node-cron": "^3.0.0",
     "swarmapp-api": "^1.0.2"
   },

@@ -1,7 +1,7 @@
 // Scheduler Samples https://crontab.guru/#*_*_*_*_*
 const cron = require('node-cron');
 const swarmappapi = require('swarmapp-api');
-const { config } = require('config/config.json');
+const { config } = require('./config/config.json');
 
 const timezone = {timezone: "Asia/Riyadh"};
 
@@ -9,7 +9,7 @@ const mohannad_fsq = new swarmappapi({ api_key: config.foursquare.Mohannad.token
 const mohammed_fsq = new swarmappapi({ api_key: config.foursquare.Mohammed.token });
 
 
-cron.schedule('*/30 * * * *', () => {
+cron.schedule('*/30 * * * *', async () => {
 	// once per hour, should not exceed 41 likes
 	//console.log('Running Every 30 minutes');
 	//twt_bufai7an.updateHashtags();
@@ -19,19 +19,19 @@ cron.schedule('*/30 * * * *', () => {
 	// twt_notkwayes.raidHaaHashtags({ number_of_replies: 4, number_of_hashtags: 10 });
 });
 
-cron.schedule('*/10 * * * * *', () => {
+cron.schedule('*/10 * * * * *', async () => {
 	// Like unliked every 10 seconds
 	console.log("Running every 10 seconds");
 	await mohannad_fsq.likeUnliked(10);
 });
 
-cron.schedule('0 9 * * 0,1,2,3,4', () => {
+cron.schedule('0 9 * * 0,1,2,3,4', async () => {
 	console.log("Running at 9 am, weekdays of Ramadhan");
 	// efficiency center
 	await mohannad_fsq.checkIn("5fe69655ec39e873a5811415");
 },timezone);
 
-cron.schedule('*/10 * * * *', () => {
+cron.schedule('*/10 * * * *', async () => {
 	//console.log('Running Every 10 Minute');
 	//FSQ_BuFai7an_Autolike();
 });

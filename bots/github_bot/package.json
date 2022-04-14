@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "axios": "^0.26.1",
-    "github-api": "^3.4.0",
-    "lodash": "^4.17.21",
+    "@octokit/rest": "^18.12.0",
     "node-cron": "^3.0.0"
   },
   "devDependencies": {},
