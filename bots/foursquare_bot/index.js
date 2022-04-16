@@ -25,7 +25,7 @@ cron.schedule('*/10 * * * * *', async () => {
 	// Like unliked every 10 seconds
 	console.log("Every 10 seconds", Date());
 	await mohannad_fsq.likeUnliked(10);
-    await hessah_fsq.likeUnliked(10);
+    //await hessah_fsq.likeUnliked(10);
 });
 
 cron.schedule('0 9 * * 0,1,2,3,4', async () => {
