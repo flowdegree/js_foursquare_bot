@@ -8,31 +8,66 @@ const timezone = {timezone: "Asia/Riyadh"};
 const mohannad_fsq = new swarmappapi({ api_key: config.foursquare.Mohannad.token });
 const hessah_fsq = new swarmappapi({ api_key: config.foursquare.Hessah.token });
 const mohammed_fsq = new swarmappapi({ api_key: config.foursquare.Mohammed.token });
+const d7oom_fsq = new swarmappapi({ api_key: config.foursquare.D7oom.token });
 
 
 cron.schedule('*/30 * * * *', async () => {
     console.log("Every 30 minutes", Date());
-	// once per hour, should not exceed 41 likes
-	//console.log('Running Every 30 minutes');
-	//twt_bufai7an.updateHashtags();
-	//twt_bufai7an.addHashtagUsersToList({ number_of_likes: 4, number_of_hashtags: 10, 'list_id': '1327297142831026176' });
-	//twt_a5tabot.addHashtagUsersToList({ number_of_likes: 4, number_of_hashtags: 10, 'list_id': '1327582294094340096' });
-	// twt_notkwayes.addHashtagUsersToList({ number_of_likes: 4, number_of_hashtags: 10, 'list_id': '1327585663068241920' });
-	// twt_notkwayes.raidHaaHashtags({ number_of_replies: 4, number_of_hashtags: 10 });
 });
 
 cron.schedule('*/10 * * * * *', async () => {
 	// Like unliked every 10 seconds
 	console.log("Every 10 seconds", Date());
 	await mohannad_fsq.likeUnliked(10);
-    //await hessah_fsq.likeUnliked(10);
+    await mohammed_fsq.likeUnliked(10);
 });
 
-cron.schedule('0 9 * * 0,1,2,3,4', async () => {
-    console.log("at 9 am, weekdays of Ramadhan", Date());
-	// efficiency center
-	await mohannad_fsq.checkIn("5fe69655ec39e873a5811415");
+cron.schedule('*/5 * * * *', async () => {
+    console.log("Every 5 minutes", Date());
+    await d7oom_fsq.likeUnliked(20);
+});
+
+/*  efficiency center - 5fe69655ec39e873a5811415
+    efficiency center business incubator - 5fe69655ec39e873a5811415
+    promotion efficiency - 5f4d0445beae8f7fb01977f9
+    6 degrees tech. - 625b27f71b7adb105474a994
+*/
+
+// Morning shift, Ramadhan w saturday
+cron.schedule('0 9 * * 0,1,2,3,4,6', async () => {
+    console.log("at 9 am, weekdays of Ramadhan with saturday", Date());
+	await mohannad_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
+    await mohammed_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
 },timezone);
+
+
+// Night shift - Ramadan w saturday
+cron.schedule('0 20 * * 0,1,2,3,4,6', async () => {
+    console.log("at 8 pm, weekdays of Ramadhan with saturday", Date());
+	
+	await mohannad_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
+    await mohammed_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
+},timezone);
+
+// Morning shift - Ramadan w/o saturday
+cron.schedule('0 8 * * 0,1,2,3,4', async () => {
+    console.log("at 8 am, weekdays of Ramadhan without saturday", Date());
+},timezone);
+
+// Morning shift - Ramadan w/o saturday
+cron.schedule('0 8 * * 0,1,2,3,4', async () => {
+    console.log("at 8 am, weekdays of Ramadhan without saturday", Date());
+},timezone);
+
+// Every work day, noon time
+cron.schedule('0 12 * * 0,1,2,3,4', async () => {
+    console.log("at 12 pm, weekdays without saturday", Date());
+    await d7oom_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business Inc
+    await mohannad_fsq.checkIn("625b27f71b7adb105474a994"); // 6 degrees tech.
+    await mohammed_fsq.checkIn("5f4d0445beae8f7fb01977f9"); // Promotion Efficiency
+
+},timezone);
+
 
 cron.schedule('*/10 * * * *', async () => {
 	//console.log('Running Every 10 Minute');
