@@ -57,7 +57,6 @@ async function create_issue(){
 			title: `Check if time is accruate - ${Date.now()}`,
 			body: `Please check if the time in \`time_now.txt\` file is synchronized with world clocks ${Date.now()} and if there are any other issues in the repo.`,
 			labels: [],
-			assignees: ["mo9a7i"],
 		});
 	
 		const issue_id = result?.data?.number;
@@ -134,9 +133,11 @@ async function create_merge(pull_number){
 
 
 commit_time();
+create_issue();
 cron.schedule('*/30 * * * *', () => {
 	try {
 		commit_time();
+		create_issue();
 	} catch (error) {
 		console.error(error);
 	}
