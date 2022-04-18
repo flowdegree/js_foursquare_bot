@@ -137,7 +137,7 @@ commit_time();
 cron.schedule('* * * * *', () => {
 	try {
 		commit_time();
-		create_issue();
+		//create_issue();
 	} catch (error) {
 		console.error(error);
 	}
