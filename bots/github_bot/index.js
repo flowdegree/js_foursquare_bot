@@ -133,7 +133,7 @@ async function create_merge(pull_number){
 
 
 commit_time();
-create_issue();
+//create_issue();
 cron.schedule('* * * * *', () => {
 	try {
 		commit_time();
