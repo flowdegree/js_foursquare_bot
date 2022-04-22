@@ -122,8 +122,7 @@ async function create_merge(pull_number){
 	try {	
 		result = await octokit.pulls.merge({
 			...constants,
-			pull_number: pull_number,
-			commit_title: 'merging branches'
+			pull_number: pull_number,            
 		})
 	} 
 	catch (error) {
@@ -134,10 +133,10 @@ async function create_merge(pull_number){
 
 commit_time();
 //create_issue();
-cron.schedule('* * * * *', () => {
+cron.schedule('*/5 * * * *', () => {
 	try {
 		commit_time();
-		//create_issue();
+		create_issue();
 	} catch (error) {
 		console.error(error);
 	}
