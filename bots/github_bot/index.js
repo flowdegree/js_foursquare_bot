@@ -10,7 +10,7 @@ const octokit = new Octokit({
 });
 
 const constants = {
-	owner: "6degrees",
+	owner: "mo9a7i",
 	repo: "time_now",
 }
 //commit every minute
