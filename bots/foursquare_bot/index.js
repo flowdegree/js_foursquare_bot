@@ -9,6 +9,7 @@ const mohannad_fsq = new swarmappapi({ api_key: config.foursquare.Mohannad.token
 const hessah_fsq = new swarmappapi({ api_key: config.foursquare.Hessah.token });
 const mohammed_fsq = new swarmappapi({ api_key: config.foursquare.Mohammed.token });
 const d7oom_fsq = new swarmappapi({ api_key: config.foursquare.D7oom.token });
+const sumaya_fsq = new swarmappapi({ api_key: config.foursquare.Sumaya.token });
 
 
 cron.schedule('*/30 * * * *', async () => {
@@ -25,6 +26,11 @@ cron.schedule('*/10 * * * * *', async () => {
 cron.schedule('*/5 * * * *', async () => {
     console.log("Every 5 minutes", Date());
     await d7oom_fsq.likeUnliked(20);
+});
+
+cron.schedule('* * * * *', async () => {
+    console.log("Every 1 minute", Date());
+    await sumaya_fsq.likeUnliked(20);
 });
 
 /*  efficiency center - 5fe69655ec39e873a5811415
