@@ -1,81 +1,144 @@
-// Scheduler Samples https://crontab.guru/#*_*_*_*_*
+// initalize cronjob
 const cron = require('node-cron');
-const swarmappapi = require('swarmapp-api');
-const { config } = require('./config/config.json');
-
 const timezone = {timezone: "Asia/Riyadh"};
 
-const mohannad_fsq = new swarmappapi({ api_key: config.foursquare.Mohannad.token });
-const hessah_fsq = new swarmappapi({ api_key: config.foursquare.Hessah.token });
-const mohammed_fsq = new swarmappapi({ api_key: config.foursquare.Mohammed.token });
-const d7oom_fsq = new swarmappapi({ api_key: config.foursquare.D7oom.token });
-const sumaya_fsq = new swarmappapi({ api_key: config.foursquare.Sumaya.token });
+// convert cron expressions to human readible
+const cronstrue = require('cronstrue');
 
+// initialize swarmapp api 
+const swarmappapi = require('swarmapp-api');
 
-cron.schedule('*/30 * * * *', async () => {
-    console.log("Every 30 minutes", Date());
+// Initialize Firebase-admin
+const admin = require('firebase-admin');
+
+admin.initializeApp({
+credential: admin.credential.cert('./config/swarm-bot-configurator-firebase-adminsdk-meqwf-bcef6344a8.json'),
 });
 
-cron.schedule('*/10 * * * * *', async () => {
-	// Like unliked every 10 seconds
-	console.log("Every 10 seconds", Date());
-	await mohannad_fsq.likeUnliked(10);
-    await mohammed_fsq.likeUnliked(10);
-});
+const firestore = admin.firestore();
 
-cron.schedule('*/5 * * * *', async () => {
-    console.log("Every 5 minutes", Date());
-    await d7oom_fsq.likeUnliked(20);
-});
+async function downloadCollection(collectionName) {
+    try {
+        const collectionRef = firestore.collection(collectionName);
+        const snapshot = await collectionRef.get();
+        const collection = {};
+        snapshot.forEach((doc) => {
+            collection[doc.id] = doc.data();
+        });
+        return collection;
+    } catch (error) {
+        console.error(`Error downloading collection "${collectionName}":`, error);
+        return null;
+    }
+}
 
-cron.schedule('* * * * *', async () => {
-    console.log("Every 1 minute", Date());
-    await sumaya_fsq.likeUnliked(20);
-});
+async function run(){
+    
+    //const configs_collection = await downloadCollection("configs");
+    const users_collection = await downloadCollection("users");
 
-/*  efficiency center - 5fe69655ec39e873a5811415
-    efficiency center business incubator - 5fe69655ec39e873a5811415
-    promotion efficiency - 5f4d0445beae8f7fb01977f9
-    6 degrees tech. - 625b27f71b7adb105474a994
-*/
+    //console.log(users_collection);
+    const users_ids = Object.keys(users_collection);
 
-// Morning shift, Ramadhan w saturday
-cron.schedule('0 9 * * 0,1,2,3,4,6', async () => {
-    console.log("at 9 am, weekdays of Ramadhan with saturday", Date());
-	await mohannad_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
-    await mohammed_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
-},timezone);
+    for (const key of users_ids) {
+        console.log(key);
+    }
+
+    const fsq_instances = {};
+
+    users_ids.forEach(async user_id => {
+
+        // if token is not found, abort
+        if(!users_collection[user_id].token){
+            console.log(`auth token for user ${user_id} not found`);
+            return;
+        }
+
+        console.log(`using token ${users_collection[user_id].token} to initialize a foursquare object`);
+        fsq_instances[user_id] = new swarmappapi({api_key: users_collection[user_id].token});
+
+        // if token is found, verify if it is working
+        let validity = null;
+        try {
+            validity = await checkTokenValidity(user_id, fsq_instances[user_id]);
+            if (validity) {
+                console.log(`Token is valid.`);
+                // Update user information
+                await updateUserDataInFirestore(user_id,users_collection,validity.data.response.user);
+                // we can run the codes
+                const user_configs = users_collection[user_id].configs;
+                if (user_configs.enabled) {
+                    console.log(`Found enabled configs for  ${user_id}.`);
+                    
+                    // check if auto like enabled, then run it with the interval value provided
+                    if(user_configs.settings?.autolike?.enabled){
+                        const interval = user_configs.settings.autolike.interval;
+                        console.log(`auto likes enabled with ${interval} (${cronstrue.toString(interval)})`)
+                        cron.schedule(interval, async () => {
+                            console.log(Date(), `Running autolike for user ${user_id} with ${interval} (${cronstrue.toString(interval)})`);
+                            await fsq_instances[user_id].likeUnliked(20);
+                        }, timezone);
+                    }
+         
+                    // check if auto checkins enabled, then run them according to their cron timings
+                    if(user_configs.settings?.checkins?.enabled){
+                        console.log(`venues checkins enabled`);
+                        const venues = Object.entries(user_configs.settings.checkins.venues);
+                        console.log(`found ${venues.length} venue`);
+        
+                        venues.forEach(([venue_id, venue]) => {
+                            venue.intervals.forEach(interval =>{
+                                console.log(`setting user ${user_id} check in for ${venue_id} at the set interval ${interval.interval} (${cronstrue.toString(interval.interval)})`);
+                                cron.schedule(interval.interval, async () => {
+                                    console.log(Date(), `Checking in user ${user_id} on ${venue_id}`);
+                                    await fsq_instances[user_id].checkIn(venue_id);
+                                }, timezone);
+                            })
+                        })
+                    }
+                } 
+                else {
+                    console.log(`Document with id ${user_id} does not exist in the configs_collection.`);
+                }
+            } 
+            else {
+              console.log(`Token is invalid.`);
+            }
+        } 
+        catch (error) {
+            console.error(`Error checking token validity:`, error);
+        }   
+    })
+}
+
+// to check if user auth token is valid
+async function checkTokenValidity(user_id, fsq_instance) {
+    try {
+      const user = await fsq_instance.getUser();
+      return user;
+    } 
+	catch (error) {
+      console.error(`Error getting user data for user ${user_id}:`, error);
+      return null;
+    }
+}
 
 
-// Night shift - Ramadan w saturday
-cron.schedule('0 20 * * 0,1,2,3,4,6', async () => {
-    console.log("at 8 pm, weekdays of Ramadhan with saturday", Date());
-	
-	await mohannad_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
-    await mohammed_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business INc
-},timezone);
+async function updateUserDataInFirestore(user_id,users_collection,user_info){
+    try {
+        // Update the user object in the users_collection
+        await firestore.collection("users").doc(user_id).update({
+            last_updated_at: new Date(),
+            user: user_info
+          });
+          
+        console.log(`User ${user_id} has been successfully updated.`);
+      } 
+	  catch (error) {
+        console.error(`Error checking and updating user: ${error}`);
+      }
+}
 
-// Morning shift - Ramadan w/o saturday
-cron.schedule('0 8 * * 0,1,2,3,4', async () => {
-    console.log("at 8 am, weekdays of Ramadhan without saturday", Date());
-},timezone);
+run();
 
-// Morning shift - Ramadan w/o saturday
-cron.schedule('0 8 * * 0,1,2,3,4', async () => {
-    console.log("at 8 am, weekdays of Ramadhan without saturday", Date());
-},timezone);
-
-// Every work day, noon time
-cron.schedule('0 12 * * 0,1,2,3,4', async () => {
-    console.log("at 12 pm, weekdays without saturday", Date());
-    await d7oom_fsq.checkIn("5fe69655ec39e873a5811415"); // Efficiency Center Business Inc
-    await mohannad_fsq.checkIn("625b27f71b7adb105474a994"); // 6 degrees tech.
-    await mohammed_fsq.checkIn("5f4d0445beae8f7fb01977f9"); // Promotion Efficiency
-
-},timezone);
-
-
-cron.schedule('*/10 * * * *', async () => {
-	//console.log('Running Every 10 Minute');
-	//FSQ_BuFai7an_Autolike();
-});
+return;
