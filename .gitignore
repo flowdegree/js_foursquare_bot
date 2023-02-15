@@ -6,8 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-config.json
-secret_notes.js
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -104,4 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
-bots/foursquare_bot/config/swarm-bot-configurator-firebase-adminsdk-meqwf-bcef6344a8.json
+*/*/*/*.json
+
+config.json
+secret_notes.js

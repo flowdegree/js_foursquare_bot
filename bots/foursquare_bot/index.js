@@ -12,7 +12,7 @@ const swarmappapi = require('swarmapp-api');
 const admin = require('firebase-admin');
 
 admin.initializeApp({
-credential: admin.credential.cert('./config/swarm-bot-configurator-firebase-adminsdk-meqwf-bcef6344a8.json'),
+credential: admin.credential.cert('./config/swarm-bot-configurator-firebase-adminsdk.json'),
 });
 
 const firestore = admin.firestore();
