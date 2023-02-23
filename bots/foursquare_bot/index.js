@@ -12,7 +12,7 @@ const swarmappapi = require('swarmapp-api');
 const admin = require('firebase-admin');
 
 admin.initializeApp({
-credential: admin.credential.cert('./config/swarm-bot-configurator-firebase-adminsdk.json'),
+    credential: admin.credential.cert('./config/swarm-bot-configurator-firebase-adminsdk.json'),
 });
 
 const firestore = admin.firestore();
@@ -37,7 +37,6 @@ async function run(){
     //const configs_collection = await downloadCollection("configs");
     const users_collection = await downloadCollection("users");
 
-    //console.log(users_collection);
     const users_ids = Object.keys(users_collection);
 
     for (const key of users_ids) {
@@ -56,6 +55,7 @@ async function run(){
 
         console.log(`using token ${users_collection[user_id].token} to initialize a foursquare object`);
         fsq_instances[user_id] = new swarmappapi({api_key: users_collection[user_id].token});
+        fsq_instances[user_id].initialize();
 
         // if token is found, verify if it is working
         let validity = null;
