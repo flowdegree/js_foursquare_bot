@@ -6,7 +6,7 @@ const a5tabot = new tweety({ name: 'a5tabot' });
 
 async function run_a5tabot(){
 	await a5tabot.updateHashtags();
-	a5tabot.addHashtagUsersToList({ number_of_adds: 4, number_of_hashtags: 10, 'list_id': '1327582294094340096' });
+	//a5tabot.addHashtagUsersToList({ number_of_adds: 4, number_of_hashtags: 10, 'list_id': '1327582294094340096' });
 
 	// Every 30 minutes
 	cron.schedule('*/30 * * * *', async () => {
