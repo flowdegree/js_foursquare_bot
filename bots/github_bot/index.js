@@ -5,14 +5,10 @@ const {Base64} = require('js-base64');
 const { config } = require('./config/config.json');
 const { Octokit } = require("@octokit/rest");
 
-const octokit = new Octokit({
-  auth: config.github.mo9a7i.token,
-});
+const octokit = new Octokit({auth: config.github.mo9a7i.token,});
 
-const constants = {
-	owner: "mo9a7i",
-	repo: "time_now",
-}
+const constants = {	owner: "mo9a7i",	repo: "time_now",}
+
 //commit every minute
 async function commit_time(branch_name = undefined){
 	try {
@@ -42,8 +38,6 @@ async function commit_time(branch_name = undefined){
 
 		console.log(result ? "Success committing" : "failed comitting");
 
-		await create_pull('newest_time');
-	
 	} 
 	catch (error) {
 		console.error(error.response)
@@ -79,8 +73,6 @@ async function create_issue(){
 	} catch (error) {
 		console.error(error);
 	}
-	
-	  
 }
 
 async function create_pull(branch_name){
@@ -92,26 +84,28 @@ async function create_pull(branch_name){
 			base: 'main',
 			head: `${branch_name}`,
 		});
-		console.log("pull_number", result.data.number);
-
-		create_review(result.data.number);
-		console.log('done;');
-		
+		console.log("Pull_number", result.data.number);
+		return result.data.number;
 
 	} catch (error) {
-		console.error(error?.response?.data?.errors);
+		if (error.status === 422 && error.response.data.message === 'A pull request already exists for mo9a7i:newest_time.') {
+			console.log('Pull request already exists for branch:', branch_name);
+		} else {
+			console.error(error?.response?.data?.errors);
+		}
 	}
 }
 
 async function create_review(pull_number){
 	try {		
-		result = await octokit.pulls.createReview({
+		let result = await octokit.pulls.createReview({
 			...constants,
 			pull_number: pull_number,
-			body: 'looks fine',
+			body: '👍 looks fine',
 			event: 'COMMENT'
 		})
-		create_merge(pull_number);
+		console.log('✅ Created Review')
+		return result;	
 	} 
 	catch (error) {
 		console.error(error?.response?.data?.errors);
@@ -120,25 +114,28 @@ async function create_review(pull_number){
 
 async function create_merge(pull_number){
 	try {	
-		result = await octokit.pulls.merge({
+		const result = await octokit.pulls.merge({
 			...constants,
 			pull_number: pull_number,            
 		})
+		return result;
 	} 
 	catch (error) {
 		console.error(error?.response?.data?.errors);
 	}
 }
 
-
 commit_time();
-//create_issue();
-cron.schedule('0 * * * *', () => {
+
+cron.schedule('0 * * * *', async () => {
 	try {
-		commit_time();
+		await commit_time();
+		const pull_number = await create_pull('newest_time');
+		await create_review(pull_number);
+		await create_merge(pull_number);
+		
 		create_issue();
 	} catch (error) {
 		console.error(error);
 	}
 });
- 
