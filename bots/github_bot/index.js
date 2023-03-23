@@ -1,18 +1,14 @@
-// Scheduler Samples https://crontab.guru/#*_*_*_*_*
 const cron = require('node-cron');
 const {Base64} = require('js-base64');
-
 const { config } = require('./config/config.json');
 const { Octokit } = require("@octokit/rest");
-
 const octokit = new Octokit({auth: config.github.mo9a7i.token,});
 
 const constants = {	owner: "mo9a7i",	repo: "time_now",}
 
 //commit every minute
-async function commit_time(branch_name = undefined){
+async function commit_time(branch_name = 'newest_time'){
 	try {
-
 		const path = `README.md`;
 
 		let result = await octokit.repos.getContent({
@@ -25,19 +21,17 @@ async function commit_time(branch_name = undefined){
 		const content = Base64.decode(result.data.content);
 		const new_content = content.replace(/\(\(.*\)\)/g, `(( ${Date()} ))`);
 		const encoded = Base64.encode(new_content);
-		//process.exit();
 
 		result = await octokit.repos.createOrUpdateFileContents({
 			...constants,
 			path,
 			message: `Update time to "${Date.now()}"`,
-			branch: 'newest_time',
+			branch: branch_name,
 			content: encoded,
 			sha,
 		});
 
 		console.log(result ? "Success committing" : "failed comitting");
-
 	} 
 	catch (error) {
 		console.error(error.response)
@@ -54,26 +48,42 @@ async function create_issue(){
 		});
 	
 		const issue_id = result?.data?.number;
-		issue_id ? console.log(`created issue ${issue_id}`) : console.log('creating issue failed');
-	
-		// respond and close
-		if(issue_id){
-			result = await octokit.issues.createComment({
-				...constants,
-				issue_number: issue_id,
-				body: `looks like it is 👌🏼.`,
-			});
-	
-			result = await octokit.issues.update({
-				...constants,
-				issue_number: issue_id,
-				state: 'closed',
-			});
-		}
-	} catch (error) {
+		console.log(issue_id ? `created issue ${issue_id}`: 'creating issue failed')
+		return issue_id;
+	} 
+	catch (error) {
 		console.error(error);
 	}
 }
+
+async function comment_on_issue(issue_id, message){
+	try {
+		const result = await octokit.issues.createComment({
+			...constants,
+			issue_number: issue_id,
+			body: message,
+		});
+
+		return result;
+
+	} catch (error) {
+		
+	}
+}
+
+async function close_issue(issue_id){
+	try {
+		const result = await octokit.issues.update({
+			...constants,
+			issue_number: issue_id,
+			state: 'closed',
+		});
+		return result;
+	} catch (error) {
+		
+	}
+}
+
 
 async function create_pull(branch_name){
 	try {	
@@ -125,17 +135,28 @@ async function create_merge(pull_number){
 	}
 }
 
-commit_time();
-
 cron.schedule('0 * * * *', async () => {
 	try {
-		await commit_time();
+
+		// Create Issue
+		const issue_id = await create_issue();
+
+		// update the time
+		await commit_time('newest_time');
+		// Pull request to main
 		const pull_number = await create_pull('newest_time');
+		// Review it
 		await create_review(pull_number);
+		// Accept and merge
 		await create_merge(pull_number);
-		
-		create_issue();
-	} catch (error) {
+
+
+		// respond to issue and close
+		await comment_on_issue(issue_id, `looks like it is 👌🏼.`);
+		await close_issue(issue_id);
+
+	} 
+	catch (error) {
 		console.error(error);
 	}
 });
