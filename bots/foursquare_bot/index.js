@@ -3,6 +3,8 @@ require('dotenv').config()
 // initalize cronjob
 const cron = require('node-cron');
 const timezone = {timezone: "Asia/Riyadh"};
+var parser = require('cron-parser');
+
 
 // convert cron expressions to human readible
 const cronstrue = require('cronstrue');
@@ -62,10 +64,19 @@ async function run(){
 
         console.log(`using token ${users_collection[user_id].token} to initialize a foursquare object`);
         fsq_instances[user_id] = new swarmappapi({api_key: users_collection[user_id].token});
-        fsq_instances[user_id].initialize();
+        
+        // check if token works
+        try {
+            fsq_instances[user_id].initialize();
+        } catch (error) {
+            console.error(`Error Running ${user_id}, dumping the user`)
+            delete fsq_instances[user_id];
+            return;
+        }
+        
 
         // if token is found, verify if it is working
-        let validity = null;
+        let validity = false;
         try {
             validity = await checkTokenValidity(user_id, fsq_instances[user_id]);
             if (validity) {
@@ -79,12 +90,31 @@ async function run(){
                     
                     // check if auto like enabled, then run it with the interval value provided
                     if(user_configs.settings?.autolike?.enabled){
-                        const interval = user_configs.settings.autolike.interval;
-                        console.log(`auto likes enabled with ${interval} (${cronstrue.toString(interval)})`)
-                        cron.schedule(interval, async () => {
-                            console.log(Date(), `Running autolike for user ${user_id} with ${interval} (${cronstrue.toString(interval)})`);
-                            await fsq_instances[user_id].likeUnliked(20);
-                        }, timezone);
+                        let interval = user_configs.settings.autolike.interval;
+                        let interval_to_use = function(){
+                            return interval;
+                        }
+                        console.log(interval_to_use())
+                        console.log(`auto likes enabled with ${interval_to_use()} (${cronstrue.toString(interval_to_use())})`)
+                        try {
+                            async function like_unliked() {
+                              console.log(Date(), `Running autolike for user ${user_id} with ${interval_to_use()} (${cronstrue.toString(interval_to_use())})`);
+                              const NUMBER_OF_CHECKINS_TO_LIKE = 20;
+                              const succeeded_likes = await fsq_instances[user_id].likeUnliked(NUMBER_OF_CHECKINS_TO_LIKE);
+                              if(succeeded_likes.length < (NUMBER_OF_CHECKINS_TO_LIKE/2)){
+                                interval = interval.match(/\d+/)[0] * 2 + ' * * * * *';
+                                console.log(`low likes count, changing interval to ${interval_to_use()}`);
+                                task.stop();
+                                task = cron.schedule(interval_to_use(), like_unliked, {...timezone, scheduled: false});
+                                task.start();
+                              }
+                            }
+                            let task = cron.schedule(interval_to_use(), like_unliked, {...timezone, scheduled: false});
+                            task.start();
+                          } 
+                          catch (error) {
+                            console.log(error)
+                          }
                     }
          
                     // check if auto checkins enabled, then run them according to their cron timings
@@ -126,7 +156,7 @@ async function checkTokenValidity(user_id, fsq_instance) {
     } 
 	catch (error) {
       console.error(`Error getting user data for user ${user_id}:`, error);
-      return null;
+      return false;
     }
 }
 
