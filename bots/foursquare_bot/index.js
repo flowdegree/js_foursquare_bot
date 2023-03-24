@@ -3,7 +3,9 @@ require('dotenv').config()
 // initalize cronjob
 const cron = require('node-cron');
 const timezone = {timezone: "Asia/Riyadh"};
-var parser = require('cron-parser');
+const utils = require('@6degrees/node-cron-utils');
+
+const node_utils = new utils();
 
 
 // convert cron expressions to human readible
@@ -44,7 +46,7 @@ async function downloadCollection(collectionName) {
 async function run(){
     
     //const configs_collection = await downloadCollection("configs");
-    const users_collection = await downloadCollection("users");
+    const users_collection = await downloadCollection("foursquare");
 
     const users_ids = Object.keys(users_collection);
 
@@ -89,32 +91,32 @@ async function run(){
                     console.log(`Found enabled configs for  ${user_id}.`);
                     
                     // check if auto like enabled, then run it with the interval value provided
-                    if(user_configs.settings?.autolike?.enabled){
-                        let interval = user_configs.settings.autolike.interval;
-                        let interval_to_use = function(){
-                            return interval;
-                        }
-                        console.log(interval_to_use())
-                        console.log(`auto likes enabled with ${interval_to_use()} (${cronstrue.toString(interval_to_use())})`)
-                        try {
-                            async function like_unliked() {
-                              console.log(Date(), `Running autolike for user ${user_id} with ${interval_to_use()} (${cronstrue.toString(interval_to_use())})`);
-                              const NUMBER_OF_CHECKINS_TO_LIKE = 20;
-                              const succeeded_likes = await fsq_instances[user_id].likeUnliked(NUMBER_OF_CHECKINS_TO_LIKE);
-                              if(succeeded_likes.length < (NUMBER_OF_CHECKINS_TO_LIKE/2)){
-                                interval = interval.match(/\d+/)[0] * 2 + ' * * * * *';
-                                console.log(`low likes count, changing interval to ${interval_to_use()}`);
+                    
+                    // Check if auto like is enabled and run it with the interval value provided
+                    const autolikeConfig = user_configs.settings?.autolike;
+                    if(autolikeConfig?.enabled && autolikeConfig?.interval){
+                        let interval = autolikeConfig.interval;
+                        console.log(`auto likes enabled with ${interval} (${cronstrue.toString(interval)})`);
+                    
+                        async function like_unliked() {
+                            console.log(Date(), `Running autolike for user ${user_id} with ${interval} (${cronstrue.toString(interval)})`);
+                            const NUMBER_OF_CHECKINS_TO_LIKE = 20;
+                            const succeeded_likes = await fsq_instances[user_id].likeUnliked(NUMBER_OF_CHECKINS_TO_LIKE);
+                            if(succeeded_likes.length < (NUMBER_OF_CHECKINS_TO_LIKE/2)){
+                                try {
+                                    interval = node_utils.double(interval);
+                                } catch (error) {
+                                    console.log(error);
+                                }
+                                console.log(`low likes count, changing interval to ${interval}`);
                                 task.stop();
-                                task = cron.schedule(interval_to_use(), like_unliked, {...timezone, scheduled: false});
+                                task = cron.schedule(interval, like_unliked, {...timezone, scheduled: false});
                                 task.start();
-                              }
                             }
-                            let task = cron.schedule(interval_to_use(), like_unliked, {...timezone, scheduled: false});
-                            task.start();
-                          } 
-                          catch (error) {
-                            console.log(error)
-                          }
+                        }
+                    
+                        let task = cron.schedule(interval, like_unliked, {...timezone, scheduled: false});
+                        task.start();
                     }
          
                     // check if auto checkins enabled, then run them according to their cron timings

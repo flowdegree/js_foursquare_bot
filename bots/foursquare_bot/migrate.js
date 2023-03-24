@@ -1,29 +1,34 @@
 // Initialize Firebase-admin
+require('dotenv').config({path: '../../.env'})
 const admin = require('firebase-admin');
 
 admin.initializeApp({
-    credential: admin.credential.cert('./config/swarm-bot-configurator-firebase-adminsdk.json'),
+    credential: admin.credential.cert({
+        "project_id": process.env.FIREBASE_PROJECT_ID,
+        "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+        "private_key": process.env.FIREBASE_PRIVATE_KEY,
+      }),
 });
 
 const firestore = admin.firestore();
 
 const usersRef = firestore.collection('users');
-const configsRef = firestore.collection('configs');
 
-configsRef.get().then(configsSnapshot => {
-    configsSnapshot.forEach(configDoc => {
-        const configData = configDoc.data();
-        const userId = configDoc.id;
-        const userRef = usersRef.doc(userId);
+const newCollection = 'foursqure';
+const newRef = firestore.collection(newCollection);
 
-        userRef.get().then(userSnapshot => {
-            if (userSnapshot.exists) {
-                userRef.update({
-                    configs: configData
-                });
-            } else {
-                console.log(`User with id ${userId} not found.`);
-            }
-        });
+try {
+    usersRef.get().then(userSnapshot =>{
+        console.log(userSnapshot)
+        userSnapshot.forEach(userDoc => {
+            const userId = userDoc.id;
+
+            console.log(userDoc.data())
+            const userRef = newRef.doc(userId).set(userDoc.data());
+            //newRef.setDoc(userDoc.data())
+        })
     });
-});
+} catch (error) {
+    console.log(error)
+}
+

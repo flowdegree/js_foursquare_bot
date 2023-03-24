@@ -1,11 +1,11 @@
 const cron = require('node-cron');
 const {Base64} = require('js-base64');
-const { config } = require('./config/config.json');
+//const { config } = require('./config/config.json');
 const { Octokit } = require("@octokit/rest");
-const octokit = new Octokit({auth: config.github.mo9a7i.token,});
+const octokit = new Octokit({auth: process.env.GITHUB_TOKEN});
 
-const constants = {	owner: "mo9a7i",	repo: "time_now",}
-
+const constants = {	owner: "mo9a7i", repo: "time_now",}
+console.log('running github bot')
 //commit every minute
 async function commit_time(branch_name = 'newest_time'){
 	try {
@@ -84,13 +84,12 @@ async function close_issue(issue_id){
 	}
 }
 
-
 async function create_pull(branch_name){
 	try {	
 		let result = await octokit.pulls.create({
 			...constants,
 			title: `Lets adjust to - ${Date.now()}`,
-			body: `Adjusting time.`,
+			body: `Time seems a little bit off 🤢.`,
 			base: 'main',
 			head: `${branch_name}`,
 		});
@@ -111,7 +110,7 @@ async function create_review(pull_number){
 		let result = await octokit.pulls.createReview({
 			...constants,
 			pull_number: pull_number,
-			body: '👍 looks fine',
+			body: '👍 looks fine now, ready to merge',
 			event: 'COMMENT'
 		})
 		console.log('✅ Created Review')
@@ -135,28 +134,38 @@ async function create_merge(pull_number){
 	}
 }
 
-cron.schedule('0 * * * *', async () => {
+cron.schedule('*/30 * * * * *', async () => {
 	try {
-
 		// Create Issue
+		console.log(`creating issue`)
 		const issue_id = await create_issue();
 
 		// update the time
+		console.log(`committing the new time`)
 		await commit_time('newest_time');
+		
 		// Pull request to main
 		const pull_number = await create_pull('newest_time');
+		console.log(`created pull request # ${pull_number}`)
+		
 		// Review it
+		console.log(`reviewing # ${pull_number}`)
 		await create_review(pull_number);
+		
 		// Accept and merge
+		console.log(`merging # ${pull_number}`)
 		await create_merge(pull_number);
 
 
 		// respond to issue and close
+		console.log(`commenting on issue # ${issue_id}`)
 		await comment_on_issue(issue_id, `looks like it is 👌🏼.`);
-		await close_issue(issue_id);
+		console.log(`closing issue # ${issue_id}`)
 
+		await close_issue(issue_id);
 	} 
 	catch (error) {
 		console.error(error);
 	}
 });
+

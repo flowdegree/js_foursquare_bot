@@ -1,25 +1,82 @@
 const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
-const config_file_name = '../config/config.json';
-const config  = require(config_file_name).config;
 const Twitter = require('twitter');
+// Initialize Firebase-admin
+const admin = require('firebase-admin');
+
+console.log(process.env.FIREBASE_CLIENT_EMAIL)
+admin.initializeApp({
+    credential: admin.credential.cert({
+        "project_id": process.env.FIREBASE_PROJECT_ID,
+        "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+        "private_key": process.env.FIREBASE_PRIVATE_KEY,
+      }),
+});
+
+const firestore = admin.firestore();
+async function downloadCollection(collectionName) {
+    try {
+        const collectionRef = firestore.collection(collectionName);
+        const snapshot = await collectionRef.get();
+        const collection = {};
+        snapshot.forEach((doc) => {
+            collection[doc.id] = doc.data();
+        });
+        return collection;
+    } catch (error) {
+        console.error(`Error downloading collection "${collectionName}":`, error);
+        return null;
+    }
+}
+
+async function setDocument(collectionName, documentName, field, data){
+	try {
+        const collectionRef = firestore.collection(collectionName);
+		collectionRef.doc(documentName)[field] = data;
+        return;
+    } catch (error) {
+        console.error(`Error setting collection "${collectionName}${documentName}":`, error);
+        return null;
+    }
+}
+
+async function getDocument(collectionName, documentName){
+	try {
+        const collectionRef = firestore.collection(collectionName);
+		const doc = await collectionRef.doc(documentName).get();
+        return doc;
+    } catch (error) {
+        console.error(`Error getting collection "${collectionName}${documentName}":`, error);
+        return null;
+    }
+}
 
 class TwitterAPI {
 	constructor(cnf) {
 		this.cnf = cnf;
+	}
+
+	async initialize(){
+		const users_collection = await downloadCollection("twitter");
+		this.users_ids = Object.keys(users_collection);
 		this.configuration = config[cnf.name];
-		this.client = new Twitter({
-			consumer_key: this.configuration.CONSUMER_KEY,
-			consumer_secret: this.configuration.CONSUMER_SECRET,
-			access_token_key: this.configuration.ACCESS_TOKEN,
-			access_token_secret: this.configuration.ACCESS_SECRET,
-		});
+		const twitter_instances = {};
+		
+		users_ids.forEach(async user_id => {
+			twitter_instances[user_id] = new Twitter({
+				consumer_key: users_collection[CONSUMER_KEY],
+				consumer_secret: users_collection[CONSUMER_SECRET],
+				access_token_key: users_collection[ACCESS_TOKEN],
+				access_token_secret: users_collection[ACCESS_SECRET],
+			});
+		})
 	}
 
 	log(message){
 		console.log(`✅ ${new Date().toLocaleString()} - ${this.cnf.name} -`, message);
 	}
+
 	error(message){
 		console.error(`🔴 ${new Date().toLocaleString()} - ${this.cnf.name} - Error:`, message);
 	}
@@ -27,7 +84,7 @@ class TwitterAPI {
 	async likeHashtag(options) {
 		_.defaults(options, {'count': 10, 'q': '#السعودية',});
 
-		const tweets = await this.client.get('search/tweets', options);
+		const tweets = await this.twitter_instances[this.cnf.name].get('search/tweets', options);
 		this.log(`Got: ${tweets.statuses.length} tweets`);
 
 		if(tweets.statuses) {
@@ -37,7 +94,7 @@ class TwitterAPI {
 					await new Promise(r => setTimeout(r, 1000));
 					this.log('trying to like ' + tweet.text.substring(0, 40));
 
-					const result = await this.client.post('favorites/create', { id: tweet.id_str, count: options.count });
+					const result = await this.twitter_instances[this.cnf.name].post('favorites/create', { id: tweet.id_str, count: options.count });
 					this.log(result.id_str);
 
 					if(counter >= options.number_of_likes) {
@@ -59,11 +116,12 @@ class TwitterAPI {
 			'number_of_hashtags': 5,
 		});
 
-		const hashtags = this.configuration.trends;
+		const hashtags = await getDocument('twitter',this.cnf.name).trends;
+		//const hashtags = this.configuration.trends;
 
 		for(const i = 0; i < options.number_of_hashtags; i++) {
 			this.log('Getting tweets from: ' + hashtags[i].name);
-			const tweets = await this.client.get('search/tweets', { 'count': options.number_of_likes, 'q': hashtags[i].query });
+			const tweets = await this.twitter_instances[this.cnf.name].get('search/tweets', { 'count': options.number_of_likes, 'q': hashtags[i].query });
 			this.log('Got: ' + tweets.statuses.length + ' tweets');
 
 			if(tweets.statuses) {
@@ -74,7 +132,7 @@ class TwitterAPI {
 
 						this.log('trying to like ' + tweet.text.substring(0, 40));
 
-						const result = await this.client.post('favorites/create', { id: tweet.id_str, count: options.count });
+						const result = await this.twitter_instances[this.cnf.name].post('favorites/create', { id: tweet.id_str, count: options.count });
 						this.log(result.id_str);
 
 						if(counter >= options.number_of_likes) {
@@ -90,19 +148,18 @@ class TwitterAPI {
 		}
 	}
 
-	
-
 	// Search a hashtag, get users, add them to a list
 	async addHashtagUsersToList(options) {
 		// Get List of People
 		_.defaults(options, {'number_of_adds': 10, 'number_of_hashtags': 5,});
 
-		const hashtags = this.configuration.trends;
+		const hashtags = await getDocument('twitter',this.cnf.name).trends;
+		//const hashtags = this.configuration.trends;
 		
 		const requests = [];
 
 		for (let i = 0; i < options.number_of_hashtags; i++) {
-			const request = this.client.get('search/tweets', { 'count': options.number_of_adds, 'q': hashtags[i].query });
+			const request = this.twitter_instances[this.cnf.name].get('search/tweets', { 'count': options.number_of_adds, 'q': hashtags[i].query });
 			requests.push(request);
 		}
 
@@ -119,7 +176,7 @@ class TwitterAPI {
 						this.log(`trying to add ${tweet.user.screen_name} to list ${options.list_id} `);
 	
 						// Add them to list
-						const result = await this.client.post('/lists/members/create', {
+						const result = await this.twitter_instances[this.cnf.name].post('/lists/members/create', {
 							'list_id': options.list_id,
 							'screen_name': tweet.user.screen_name,
 						});
@@ -141,22 +198,21 @@ class TwitterAPI {
 
 		_.defaults(options, {
 			'q': phrase,
-			'since_id': this.configuration.last_reversed,
+			'since_id': await getDocument('twitter',this.cnf.name).last_reversed,
 			tweet_mode: 'extended',
 		});
 
 		try {
-			const tweets = await this.client.get('search/tweets', options);
+			const tweets = await this.twitter_instances[this.cnf.name].get('search/tweets', options);
 			this.log(`Did not find any tweets sent to ${options.twitter_handle}`);
 
 			if (tweets.statuses.length > 0) {
 				this.log(`Found ${tweets.statuses.length} sent to ${options.twitter_handle}`);
 				for (const tweet of tweets.statuses) {
 					if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
-						this.configuration.last_reversed = tweet.id_str;
-						this.saveScript(config_file_name, {
-							'config': config,
-						});
+						setDocument('twitter','a5tabot',last_reversed,id_str)
+						//this.configuration.last_reversed = tweet.id_str;
+						//this.saveScript(config_file_name, {'config': config,});
 						break;
 					}
 					// Clean the string
@@ -173,11 +229,12 @@ class TwitterAPI {
 						auto_populate_reply_metadata: true,
 					};
 	
-					const result = await this.client.post('statuses/update', reply);
+					const result = await this.twitter_instances[this.cnf.name].post('statuses/update', reply);
 
 					if (result) {
-						this.configuration.last_reversed = tweet.id_str;
-						this.saveScript(config_file_name, {'config': config,});
+						setDocument('twitter','a5tabot',last_reversed,tweet.id_str)
+						//this.configuration.last_reversed = tweet.id_str;
+						//this.saveScript(config_file_name, {'config': config,});
 					}
 				}
 			}
@@ -195,21 +252,21 @@ class TwitterAPI {
 			'twitter_handle': this.cnf.name,
 		});
 
-		const hashtags = this.configuration.trends;
+		
+		const hashtags = await getDocument('twitter',this.cnf.name).trends;
 
 		for(const i = 0; i < options.number_of_hashtags; i++) {
 			this.log(`Getting tweets from: ${hashtags[i].name} Maximum ${options.number_of_replies} tweets`);
-			const tweets = await this.client.get('search/tweets', { 'count': options.number_of_replies, 'q': hashtags[i].query });
+			const tweets = await this.twitter_instances[this.cnf.name].get('search/tweets', { 'count': options.number_of_replies, 'q': hashtags[i].query });
 			this.log(`Got: ${tweets.statuses.length} tweets`);
 
 
 			if (tweets.statuses.length > 0) {
 				for (const tweet of tweets.statuses) {
 					if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
-						this.configuration.last_haad = tweet.id_str;
-						this.saveScript(config_file_name, {
-							'config': config,
-						});
+						setDocument('twitter','a5tabot',last_haad,tweet.id_str)
+						//this.configuration.last_haad = tweet.id_str;
+						//this.saveScript(config_file_name, {'config': config,});
 						break;
 					}
 					// Clean the string
@@ -229,13 +286,12 @@ class TwitterAPI {
 					};
 
 					try {
-						const result = await this.client.post('statuses/update', reply);
+						const result = await this.twitter_instances[this.cnf.name].post('statuses/update', reply);
 
 						if (result) {
-							this.configuration.last_haad = tweet.id_str;
-							this.saveScript(config_file_name, {
-								'config': config,
-							});
+							setDocument('twitter','a5tabot',last_haad,tweet.id_str)
+							//this.configuration.last_haad = tweet.id_str;
+							//this.saveScript(config_file_name, {'config': config,});
 						}
 					}
 					catch (error) {
@@ -251,19 +307,18 @@ class TwitterAPI {
 
 		const phrase = 'to:' + options.twitter_handle;
 
-		_.defaults(options, {'q': phrase, tweet_mode: 'extended', 'since_id': this.configuration.last_haad,});
+		_.defaults(options, {'q': phrase, tweet_mode: 'extended', 'since_id': await getDocument('twitter',this.cnf.name).last_haad,});
 
 		try {
-			const tweets = await this.client.get('search/tweets', options);
+			const tweets = await this.twitter_instances[this.cnf.name].get('search/tweets', options);
 			this.log('Found ' + tweets.statuses.length + ' sent to ' + options.twitter_handle);
 
 			if (tweets.statuses.length > 0) {
 				for (const tweet of tweets.statuses) {
 					if(tweet.user.screen_name.toLowerCase() == options.twitter_handle.toLowerCase()) {
-						this.configuration.last_haad = tweet.id_str;
-						this.saveScript(config_file_name, {
-							'config': config,
-						});
+						setDocument('twitter','a5tabot',last_haad,tweet.id_str)
+						//this.configuration.last_haad = tweet.id_str;
+						//this.saveScript(config_file_name, {'config': config,});
 						break;
 					}
 
@@ -283,11 +338,12 @@ class TwitterAPI {
 						auto_populate_reply_metadata: true,
 					};
 
-					const result = await this.client.post('statuses/update', reply);
+					const result = await this.twitter_instances[this.cnf.name].post('statuses/update', reply);
 
 					if (result) {
-						this.configuration.last_haad = tweet.id_str;
-						this.saveScript(config_file_name, {'config': config,});
+						setDocument('twitter','a5tabot',last_haad,tweet.id_str)
+						//this.configuration.last_haad = tweet.id_str;
+						//this.saveScript(config_file_name, {'config': config,});
 					}
 				}
 			}
@@ -303,10 +359,11 @@ class TwitterAPI {
 	// Get popular trends in certain place
 	async updateHashtags(LOCATION_WOID = '1939574') {
 		try {
-			const trends = await this.client.get('trends/place', { id: LOCATION_WOID });
+			const trends = await this.twitter_instances[this.cnf.name].get('trends/place', { id: LOCATION_WOID });
 			if (trends[0].trends) {
-				this.configuration.trends = trends[0].trends;
-				this.saveScript(config_file_name, { 'config': config });
+				setDocument('twitter','a5tabot',trends,trends[0].trends)
+				//this.configuration.trends = trends[0].trends;
+				//this.saveScript(config_file_name, { 'config': config });
 			}
 			this.log(trends[0].trends);
 			return true;

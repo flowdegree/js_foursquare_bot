@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  foursquare_bot:
+    build:
+      context: ./bots/foursquare_bot
+    env_file:
+    - .env
+  twitter_bot:
+    build:
+      context: ./bots/twitter_bot
+  github_bot:
+    build:
+      context: ./bots/github_bot
+    env_file:
+    - .env
