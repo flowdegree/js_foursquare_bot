@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 // initalize cronjob
 const cron = require('node-cron');
 const timezone = {timezone: "Asia/Riyadh"};
@@ -11,8 +13,13 @@ const swarmappapi = require('swarmapp-api');
 // Initialize Firebase-admin
 const admin = require('firebase-admin');
 
+console.log(process.env.FIREBASE_CLIENT_EMAIL)
 admin.initializeApp({
-    credential: admin.credential.cert('./config/swarm-bot-configurator-firebase-adminsdk.json'),
+    credential: admin.credential.cert({
+        "project_id": process.env.FIREBASE_PROJECT_ID,
+        "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+        "private_key": process.env.FIREBASE_PRIVATE_KEY,
+      }),
 });
 
 const firestore = admin.firestore();
