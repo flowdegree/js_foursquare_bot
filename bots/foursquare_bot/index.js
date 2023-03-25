@@ -1,12 +1,8 @@
-require('dotenv').config()
-
 // initalize cronjob
 const cron = require('node-cron');
 const timezone = {timezone: "Asia/Riyadh"};
-const utils = require('@6degrees/node-cron-utils');
-
-const node_utils = new utils();
-
+const node_cron_utils = require('@6degrees/node-cron-utils');
+const node_utils = new node_cron_utils();
 
 // convert cron expressions to human readible
 const cronstrue = require('cronstrue');
@@ -44,29 +40,25 @@ async function downloadCollection(collectionName) {
 }
 
 async function run(){
-    
-    //const configs_collection = await downloadCollection("configs");
-    const users_collection = await downloadCollection("foursquare");
-
+    const users_collection = await downloadCollection("foursqure");
     const users_ids = Object.keys(users_collection);
-
     for (const key of users_ids) {
         console.log(key);
     }
 
     const fsq_instances = {};
-
-    users_ids.forEach(async user_id => {
-
+    for (const user_id of users_ids) {
         // if token is not found, abort
+        console.log('starting')
         if(!users_collection[user_id].token){
+            console.log('starting')
             console.log(`auth token for user ${user_id} not found`);
             return;
         }
 
         console.log(`using token ${users_collection[user_id].token} to initialize a foursquare object`);
         fsq_instances[user_id] = new swarmappapi({api_key: users_collection[user_id].token});
-        
+
         // check if token works
         try {
             fsq_instances[user_id].initialize();
@@ -75,7 +67,6 @@ async function run(){
             delete fsq_instances[user_id];
             return;
         }
-        
 
         // if token is found, verify if it is working
         let validity = false;
@@ -146,8 +137,10 @@ async function run(){
         } 
         catch (error) {
             console.error(`Error checking token validity:`, error);
-        }   
-    })
+        }
+
+
+    }
 }
 
 // to check if user auth token is valid
@@ -162,11 +155,10 @@ async function checkTokenValidity(user_id, fsq_instance) {
     }
 }
 
-
-async function updateUserDataInFirestore(user_id,users_collection,user_info){
+async function updateUserDataInFirestore(user_id,users_collection = "foursquare",user_info){
     try {
         // Update the user object in the users_collection
-        await firestore.collection("users").doc(user_id).update({
+        await firestore.collection(users_collection).doc(user_id).update({
             last_updated_at: new Date(),
             user: user_info
           });

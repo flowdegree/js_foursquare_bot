@@ -1,15 +1,26 @@
 version: '3.4'
 services:
+  
   foursquare_bot:
     build:
       context: ./bots/foursquare_bot
-    env_file:
-    - .env
+    environment:
+      - FIREBASE_PROJECT_ID
+      - FIREBASE_PRIVATE_KEY
+      - FIREBASE_CLIENT_EMAIL
+      - TZ
   twitter_bot:
     build:
       context: ./bots/twitter_bot
+    environment:
+      - FIREBASE_PROJECT_ID
+      - FIREBASE_PRIVATE_KEY
+      - FIREBASE_CLIENT_EMAIL
+      - TZ  
+
   github_bot:
     build:
       context: ./bots/github_bot
-    env_file:
-    - .env
+    environment:
+      - GITHUB_TOKEN
+      - TZ 

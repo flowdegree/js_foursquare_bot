@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.26.1",
+    "dotenv": "^16.0.3",
+    "firebase-admin": "^11.5.0",
     "lodash": "^4.17.21",
     "node-cron": "^3.0.0",
     "twitter": "^1.7.1"

@@ -17,7 +17,6 @@
 
 - Lodash
 - Node-cron
-- axios
 - querystring
 - path
 - Twitter
