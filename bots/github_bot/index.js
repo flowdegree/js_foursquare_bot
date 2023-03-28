@@ -134,7 +134,7 @@ async function create_merge(pull_number){
 	}
 }
 
-cron.schedule('*/30 * * * * *', async () => {
+cron.schedule('* */5 * * * *', async () => {
 	try {
 		// Create Issue
 		console.log(`creating issue`)
