@@ -23,24 +23,10 @@ admin.initializeApp({
 });
 
 const firestore = admin.firestore();
-
-async function downloadCollection(collectionName) {
-    try {
-        const collectionRef = firestore.collection(collectionName);
-        const snapshot = await collectionRef.get();
-        const collection = {};
-        snapshot.forEach((doc) => {
-            collection[doc.id] = doc.data();
-        });
-        return collection;
-    } catch (error) {
-        console.error(`Error downloading collection "${collectionName}":`, error);
-        return null;
-    }
-}
+const collection_name = 'foursqure';
 
 async function run(){
-    const users_collection = await downloadCollection("foursqure");
+    const users_collection = await downloadCollection(collection_name);
     const users_ids = Object.keys(users_collection);
     for (const key of users_ids) {
         console.log(key);
@@ -75,10 +61,10 @@ async function run(){
             if (validity) {
                 console.log(`Token is valid.`);
                 // Update user information
-                await updateUserDataInFirestore(user_id,users_collection,validity.data.response.user);
+                await updateUserDataInFirestore(user_id,collection_name,validity.data.response.user);
                 // we can run the codes
                 const user_configs = users_collection[user_id].configs;
-                if (user_configs.enabled) {
+                if (user_configs?.enabled) {
                     console.log(`Found enabled configs for  ${user_id}.`);
                     
                     // check if auto like enabled, then run it with the interval value provided
@@ -155,7 +141,7 @@ async function checkTokenValidity(user_id, fsq_instance) {
     }
 }
 
-async function updateUserDataInFirestore(user_id,users_collection = "foursquare",user_info){
+async function updateUserDataInFirestore(user_id,users_collection,user_info){
     try {
         // Update the user object in the users_collection
         await firestore.collection(users_collection).doc(user_id).update({
@@ -168,6 +154,21 @@ async function updateUserDataInFirestore(user_id,users_collection = "foursquare"
 	  catch (error) {
         console.error(`Error checking and updating user: ${error}`);
       }
+}
+
+async function downloadCollection(collectionName) {
+    try {
+        const collectionRef = firestore.collection(collectionName);
+        const snapshot = await collectionRef.get();
+        const collection = {};
+        snapshot.forEach((doc) => {
+            collection[doc.id] = doc.data();
+        });
+        return collection;
+    } catch (error) {
+        console.error(`Error downloading collection "${collectionName}":`, error);
+        return null;
+    }
 }
 
 run();
