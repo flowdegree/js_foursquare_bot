@@ -57,7 +57,7 @@ async function run(){
         }
 
         console.log(`using token ${users_collection[user_id].token} to initialize a foursquare object`);
-        fsq_instances[user_id] = new swarmappapi({api_key: users_collection[user_id].token});
+        fsq_instances[user_id] = new swarmappapi(users_collection[user_id].token);
 
         // check if token works
         try {
