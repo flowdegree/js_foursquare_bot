@@ -28,11 +28,14 @@ const collection_name = 'foursqure';
 async function run(){
     const users_collection = await downloadCollection(collection_name);
     const users_ids = Object.keys(users_collection);
+    let tasks = [];
+    
     for (const key of users_ids) {
         console.log(key);
     }
 
     const fsq_instances = {};
+    
     for (const user_id of users_ids) {
         // if token is not found, abort
         console.log('starting')
@@ -67,8 +70,6 @@ async function run(){
                 if (user_configs?.enabled) {
                     console.log(`Found enabled configs for  ${user_id}.`);
                     
-                    // check if auto like enabled, then run it with the interval value provided
-                    
                     // Check if auto like is enabled and run it with the interval value provided
                     const autolikeConfig = user_configs.settings?.autolike;
                     if(autolikeConfig?.enabled && autolikeConfig?.interval){
@@ -94,7 +95,8 @@ async function run(){
                         }
                     
                         let task = cron.schedule(interval, like_unliked, {...timezone, scheduled: false});
-                        task.start();
+                        tasks.push(task);
+                        //task.start();
                     }
          
                     // check if auto checkins enabled, then run them according to their cron timings
@@ -107,10 +109,13 @@ async function run(){
                         venues.forEach(([venue_id, venue]) => {
                             venue.intervals.forEach(interval =>{
                                 console.log(`setting user ${user_id} check in for ${venue_id} at the set interval ${interval.interval} (${cronstrue.toString(interval.interval)})`);
-                                cron.schedule(interval.interval, async () => {
+                                
+                                const task = cron.schedule(interval.interval, async () => {
                                     console.log(Date(), `Checking in user ${user_id} on ${venue_id}`);
                                     await fsq_instances[user_id].checkIn(venue_id);
-                                }, timezone);
+                                }, {...timezone, scheduled: false});
+
+                                tasks.push(task);
                             })
                         })
                     }
@@ -124,10 +129,12 @@ async function run(){
                         
                         locations?.forEach(([location_name, location]) => {
                             console.log(`setting user ${user_id} auto checkin and add  for ${location_name} at the set interval ${location.interval} (${cronstrue.toString(location.interval)})`);
-                            cron.schedule(location.interval, async () => {
+                            const task = cron.schedule(location.interval, async () => {
                                 console.log(Date(), `auto adding user ${user_id} on ${location_name}`);
                                 await fsq_instances[user_id].autoAddTrending(location.venues_limit);
-                            }, timezone);
+                            }, {...timezone, scheduled: false});
+
+                            tasks.push(task);
                         })
                     }
                 } 
@@ -142,6 +149,11 @@ async function run(){
         catch (error) {
             console.error(`Error checking token validity:`, error);
         }
+    }
+
+    for(const task of tasks){
+        console.log('starting task');
+        task.start();
     }
 }
 
