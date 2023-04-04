@@ -75,6 +75,7 @@ async function run(){
                         let interval = autolikeConfig.interval;
                         console.log(`auto likes enabled with ${interval} (${cronstrue.toString(interval)})`);
                     
+                        // can be moved to library
                         async function like_unliked() {
                             console.log(Date(), `Running autolike for user ${user_id} with ${interval} (${cronstrue.toString(interval)})`);
                             const NUMBER_OF_CHECKINS_TO_LIKE = 20;
@@ -97,9 +98,10 @@ async function run(){
                     }
          
                     // check if auto checkins enabled, then run them according to their cron timings
-                    if(user_configs.settings?.checkins?.enabled){
+                    const autoCheckin = user_configs.settings?.checkins;
+                    if(autoCheckin?.enabled){
                         console.log(`venues checkins enabled`);
-                        const venues = Object.entries(user_configs.settings.checkins.venues);
+                        const venues = Object.entries(autoCheckin.venues);
                         console.log(`found ${venues.length} venue`);
         
                         venues.forEach(([venue_id, venue]) => {
@@ -110,6 +112,22 @@ async function run(){
                                     await fsq_instances[user_id].checkIn(venue_id);
                                 }, timezone);
                             })
+                        })
+                    }
+
+                    // check if auto add trending
+                    const autoAddTrending = user_configs.settings?.autoaddtrending;
+                    if(autoAddTrending?.enabled){
+                        console.log(`Auto Add Trending enabled`);
+                        const locations = Object.entries(autoAddTrending?.locations);
+                        console.log(`found ${locations.length} locations`);
+                        
+                        locations?.forEach(([location_name, location]) => {
+                            console.log(`setting user ${user_id} auto checkin and add  for ${location_name} at the set interval ${location.interval} (${cronstrue.toString(location.interval)})`);
+                            cron.schedule(location.interval, async () => {
+                                console.log(Date(), `auto adding user ${user_id} on ${location_name}`);
+                                await fsq_instances[user_id].autoAddTrending(location.venues_limit);
+                            }, timezone);
                         })
                     }
                 } 
@@ -124,8 +142,6 @@ async function run(){
         catch (error) {
             console.error(`Error checking token validity:`, error);
         }
-
-
     }
 }
 
