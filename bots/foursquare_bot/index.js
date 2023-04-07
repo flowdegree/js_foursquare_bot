@@ -14,6 +14,7 @@ const swarmappapi = require('swarmapp-api');
 const admin = require('firebase-admin');
 
 console.log(process.env.FIREBASE_CLIENT_EMAIL)
+
 admin.initializeApp({
     credential: admin.credential.cert({
         "project_id": process.env.FIREBASE_PROJECT_ID,
