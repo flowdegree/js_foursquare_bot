@@ -31,17 +31,16 @@ async function run(){
     const users_ids = Object.keys(users_collection);
     let tasks = [];
     
-    for (const key of users_ids) {
-        console.log(key);
-    }
+    console.log(`Found the following keys: ${users_ids.join(', ')}`)
+
+    
 
     const fsq_instances = {};
     
     for (const user_id of users_ids) {
         // if token is not found, abort
-        console.log('starting')
+        console.log('starting the bot service')
         if(!users_collection[user_id].token){
-            console.log('starting')
             console.log(`auth token for user ${user_id} not found`);
             return;
         }
@@ -83,20 +82,9 @@ async function run(){
                         async function like_unliked() {
                             console.log(Date(), `Running autolike for user ${user_id} with ${interval} (${cronstrue.toString(interval)})`);
                             const NUMBER_OF_CHECKINS_TO_LIKE = 20;
-                            const succeeded_likes = await fsq_instances[user_id].likeUnliked(NUMBER_OF_CHECKINS_TO_LIKE);
+                            const request = await fsq_instances[user_id].likeUnliked(NUMBER_OF_CHECKINS_TO_LIKE);
+                            console.log(`success: ${request.succeeded.length} failed: ${request.failed.length}`)
                             
-                            // if(succeeded_likes.length < (NUMBER_OF_CHECKINS_TO_LIKE/2)){
-                            //     try {
-                            //         interval = node_utils.double(interval);
-                            //     } 
-                            //     catch (error) {
-                            //         console.log(error);
-                            //     }
-                            //     console.log(`low likes count, changing interval to ${interval}`);
-                            //     task.stop();
-                            //     task = cron.schedule(interval, like_unliked, {...timezone, scheduled: false});
-                            //     task.start();
-                            // }
                         }
                     
                         let task = cron.schedule(interval, like_unliked, {...timezone, scheduled: false});
