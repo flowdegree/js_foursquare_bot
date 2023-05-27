@@ -21,6 +21,9 @@ services:
     build:
       context: ./bots/twitch_bot
     environment:
+      - FIREBASE_PROJECT_ID
+      - FIREBASE_PRIVATE_KEY
+      - FIREBASE_CLIENT_EMAIL
       - TWITCH_TOKEN
       - TWITCH_CLIENT_ID
       - TZ 
