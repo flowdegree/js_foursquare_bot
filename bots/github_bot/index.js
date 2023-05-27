@@ -6,7 +6,7 @@ const cronstrue = require('cronstrue');
 
 const constants = {	owner: "mo9a7i", repo: "time_now", branch: 'newest_time'};
 const interval = '0 0 * * * *';
-const SLEEP_BETWEEN_ACTIONS = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
+const SLEEP_BETWEEN_ACTIONS = 2 * 60 * 1000; // minutes *  seconds *  milliseconds
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 console.log(`running github bot every ${cronstrue.toString(interval)}`)
