@@ -54,7 +54,7 @@ async function run(){
         } catch (error) {
             console.error(`Error Running ${user_id}, dumping the user`)
             delete fsq_instances[user_id];
-            return;
+            continue;
         }
 
         // if token is found, verify if it is working
