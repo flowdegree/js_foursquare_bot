@@ -17,6 +17,14 @@ services:
       - GITHUB_TOKEN
       - TZ 
 
+  twitch_bot:
+    build:
+      context: ./bots/twitch_bot
+    environment:
+      - TWITCH_TOKEN
+      - TWITCH_CLIENT_ID
+      - TZ 
+
 x-disabled:
   twitter_bot:
     build:
