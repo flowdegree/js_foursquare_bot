@@ -33,8 +33,6 @@ async function run(){
     
     console.log(`Found the following keys: ${users_ids.join(', ')}`)
 
-    
-
     const fsq_instances = {};
     
     for (const user_id of users_ids) {

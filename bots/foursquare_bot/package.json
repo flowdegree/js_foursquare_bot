@@ -11,7 +11,7 @@
     "dotenv": "^16.0.3",
     "firebase-admin": "^11.5.0",
     "node-cron": "^3.0.0",
-    "swarmapp-api": "^2.7.8"
+    "swarmapp-api": "^2.7.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
