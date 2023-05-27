@@ -14,14 +14,12 @@ async function create_issue(data){
 	console.log(`creating issue`)
 
 	try {
-		console.log('before issue')
 		let result = await octokit.issues.create({
 			...constants,
 			title: data.title,
 			body: data.body,
 			labels: [],
 		});
-		console.log('after issue')
 	
 		const issue_id = result?.data?.number;
 		console.log('issue id is: ', result?.data?.number)
