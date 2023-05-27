@@ -6,6 +6,7 @@ const cronstrue = require('cronstrue');
 
 const constants = {	owner: "mo9a7i", repo: "time_now", branch: 'newest_time'};
 const interval = '0 0 * * * *';
+const SLEEP_BETWEEN_ACTIONS = 5 * 60 * 1000; // 5 minutes * 60 seconds * 1000 milliseconds
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 console.log(`running github bot every ${cronstrue.toString(interval)}`)
@@ -57,9 +58,7 @@ async function commit_time(data){
 			content: encoded,
 			sha,
 		});
-		console.log('commit result', result);
-
-		console.log(result ? "Success committing" : "failed comitting");
+		console.log('commit status', result.status);
 	} 
 	catch (error) {
 		console.error(error.response)
@@ -161,7 +160,7 @@ async function run(){
 				file is synchronized with world clocks ${date_now} and 
 				if there are any other issues in the repo.`
 		});
-		await sleep(300000);
+		await sleep(SLEEP_BETWEEN_ACTIONS);
 
 		// update the time
 		await commit_time({
@@ -169,7 +168,7 @@ async function run(){
 			message: `Update time to "${date_now}"`, 
 			branch_name: constants.branch
 		});
-		await sleep(300000);
+		await sleep(SLEEP_BETWEEN_ACTIONS);
 		
 		// Pull request to main
 		const pull_number = await create_pull({
@@ -178,25 +177,25 @@ async function run(){
 			title: `Lets adjust to - ${date_now}`,
 			body: `Time seems a little bit off 🤢.`
 		});
-		await sleep(300000);
+		await sleep(SLEEP_BETWEEN_ACTIONS);
 		
 		// Review it
 		await create_review({
 			pull_number: pull_number,
 			body: '👍 looks fine now, ready to merge'
 		});
-		await sleep(300000);
+		await sleep(SLEEP_BETWEEN_ACTIONS);
 
 		// Accept and merge
 		await create_merge(pull_number);
-		await sleep(300000);
+		await sleep(SLEEP_BETWEEN_ACTIONS);
 
 		// respond to issue and close
 		await comment_on_issue({
 			issue_id: issue_id, 
 			body:`looks like it is 👌🏼.`
 		});
-		await sleep(300000);
+		await sleep(SLEEP_BETWEEN_ACTIONS);
 
 		await close_issue(issue_id);
 	} 
