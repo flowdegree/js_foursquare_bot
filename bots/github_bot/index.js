@@ -2,12 +2,15 @@ const cron = require('node-cron');
 const {Base64} = require('js-base64');
 //const { config } = require('./config/config.json');
 const { Octokit } = require("@octokit/rest");
-const octokit = new Octokit({auth: process.env.GITHUB_TOKEN});
+const octokit = new Octokit({auth: process.env.GITHUB_TOKEN, userAgent: 'myApp v1.2.3',});
 
-const constants = {	owner: "mo9a7i", repo: "time_now",}
+const constants = {	owner: "mo9a7i", repo: "time_now", branch: 'newest_time'};
+
 console.log('running github bot')
+
 //commit every minute
-async function commit_time(branch_name = 'newest_time'){
+
+async function commit_time(data){
 	try {
 		const path = `README.md`;
 
@@ -19,17 +22,18 @@ async function commit_time(branch_name = 'newest_time'){
 		
 		const sha = result?.data?.sha;
 		const content = Base64.decode(result.data.content);
-		const new_content = content.replace(/\(\(.*\)\)/g, `(( ${Date()} ))`);
+		const new_content = content.replace(/\(\(.*\)\)/g, `(( ${data.date} ))`);
 		const encoded = Base64.encode(new_content);
 
 		result = await octokit.repos.createOrUpdateFileContents({
 			...constants,
 			path,
-			message: `Update time to "${Date.now()}"`,
-			branch: branch_name,
+			message: data.message,
+			branch: data.branch_name,
 			content: encoded,
 			sha,
 		});
+		console.log('commit result', result);
 
 		console.log(result ? "Success committing" : "failed comitting");
 	} 
@@ -38,30 +42,33 @@ async function commit_time(branch_name = 'newest_time'){
 	}
 }
 
-async function create_issue(){
+async function create_issue(data){
 	try {
+		console.log('before issue')
 		let result = await octokit.issues.create({
 			...constants,
-			title: `Check if time is accruate - ${Date.now()}`,
-			body: `Please check if the time in \`time_now.txt\` file is synchronized with world clocks ${Date.now()} and if there are any other issues in the repo.`,
+			title: data.title,
+			body: data.body,
 			labels: [],
 		});
+		console.log('after issue')
 	
 		const issue_id = result?.data?.number;
-		console.log(issue_id ? `created issue ${issue_id}`: 'creating issue failed')
+		console.log(result)
 		return issue_id;
 	} 
 	catch (error) {
+		throw error;
 		console.error(error);
 	}
 }
 
-async function comment_on_issue(issue_id, message){
+async function comment_on_issue(data){
 	try {
 		const result = await octokit.issues.createComment({
 			...constants,
-			issue_number: issue_id,
-			body: message,
+			issue_number: data.issue_id,
+			body: data.body,
 		});
 
 		return result;
@@ -84,14 +91,14 @@ async function close_issue(issue_id){
 	}
 }
 
-async function create_pull(branch_name){
+async function create_pull(data){
 	try {	
 		let result = await octokit.pulls.create({
 			...constants,
-			title: `Lets adjust to - ${Date.now()}`,
-			body: `Time seems a little bit off 🤢.`,
+			title: data.title,
+			body: data.body,
 			base: 'main',
-			head: `${branch_name}`,
+			head: `${data.branch_name}`,
 		});
 		console.log("Pull_number", result.data.number);
 		return result.data.number;
@@ -105,12 +112,12 @@ async function create_pull(branch_name){
 	}
 }
 
-async function create_review(pull_number){
+async function create_review(data){
 	try {		
 		let result = await octokit.pulls.createReview({
 			...constants,
-			pull_number: pull_number,
-			body: '👍 looks fine now, ready to merge',
+			pull_number: data.pull_number,
+			body: data.body,
 			event: 'COMMENT'
 		})
 		console.log('✅ Created Review')
@@ -134,23 +141,48 @@ async function create_merge(pull_number){
 	}
 }
 
-cron.schedule('* */5 * * * *', async () => {
+async function run(){
 	try {
+		const date_now = Date.now();
 		// Create Issue
 		console.log(`creating issue`)
-		const issue_id = await create_issue();
+
+		const issue_id = await create_issue({
+			date: date_now, 
+			title:`Check if time is accruate - ${date_now}`,
+			body:`Please check if the time in \`time_now.txt\` 
+				file is synchronized with world clocks ${date_now} and 
+				if there are any other issues in the repo.`
+		});
+
+		console.log(issue_id)
+
+		
 
 		// update the time
 		console.log(`committing the new time`)
-		await commit_time('newest_time');
+		await commit_time({
+			date: date_now, 
+			message: `Update time to "${date_now}"`, 
+			branch_name: constants.branch
+		});
 		
 		// Pull request to main
-		const pull_number = await create_pull('newest_time');
+		const pull_number = await create_pull({
+			date:date_now, 
+			branch_name: constants.branch,
+			title: `Lets adjust to - ${date_now}`,
+			body: `Time seems a little bit off 🤢.`
+		});
+
 		console.log(`created pull request # ${pull_number}`)
 		
 		// Review it
 		console.log(`reviewing # ${pull_number}`)
-		await create_review(pull_number);
+		await create_review({
+			pull_number: pull_number,
+			body: '👍 looks fine now, ready to merge'
+		});
 		
 		// Accept and merge
 		console.log(`merging # ${pull_number}`)
@@ -159,7 +191,10 @@ cron.schedule('* */5 * * * *', async () => {
 
 		// respond to issue and close
 		console.log(`commenting on issue # ${issue_id}`)
-		await comment_on_issue(issue_id, `looks like it is 👌🏼.`);
+		await comment_on_issue({
+			issue_id: issue_id, 
+			body:`looks like it is 👌🏼.`
+		});
 		console.log(`closing issue # ${issue_id}`)
 
 		await close_issue(issue_id);
@@ -167,5 +202,12 @@ cron.schedule('* */5 * * * *', async () => {
 	catch (error) {
 		console.error(error);
 	}
+}
+cron.schedule('* */20 * * * *', async () => {
+	await run();
 });
+
+run();
+
+
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@octokit/rest": "^18.12.0",
+    "@octokit/rest": "^19.0.11",
     "js-base64": "^3.7.2",
     "node-cron": "^3.0.0"
   },
