@@ -9,14 +9,18 @@ services:
       - FIREBASE_PRIVATE_KEY
       - FIREBASE_CLIENT_EMAIL
       - TZ
+  
   twitter_bot:
     build:
       context: ./bots/twitter_bot
+    profiles:
+      - donotstart
     environment:
       - FIREBASE_PROJECT_ID
       - FIREBASE_PRIVATE_KEY
       - FIREBASE_CLIENT_EMAIL
       - TZ  
+  
   github_bot:
     build:
       context: ./bots/github_bot
