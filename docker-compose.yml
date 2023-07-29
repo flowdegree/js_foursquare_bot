@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   
-  foursquare_bot:
+  bot:
     build:
       context: .
     environment:
