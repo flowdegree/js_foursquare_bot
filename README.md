@@ -1,6 +1,21 @@
 # js_buwajd_api_cronjob_bots
 
- A set of NodeJS personal bots that run on cronjobs
+ [used to be] A set of NodeJS personal bots that run on cronjobs
+ now it only covers foursquare, i moved everything else to separate repos
+
+## Build the image
+
+`$ docker build -t mo9a7i/js_foursquare_bot .`
+
+### Remove running instances (if any)
+
+`$ docker stop js_foursquare_bot`
+
+`$ docker rm js_foursquare_bot`
+
+### Run the new image
+
+`$ docker run --name js_foursquare_bot -d mo9a7i/js_foursquare_bot`
 
 ## Usage
 
