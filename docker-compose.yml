@@ -3,7 +3,7 @@ services:
   
   foursquare_bot:
     build:
-      context: ./bots/foursquare_bot
+      context: .
     environment:
       - FIREBASE_PROJECT_ID
       - FIREBASE_PRIVATE_KEY
