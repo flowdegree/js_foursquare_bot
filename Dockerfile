@@ -7,7 +7,7 @@ RUN apk del curl
 
 WORKDIR /usr/src/app
 
-COPY ./pnpm-lock.yaml ./
+COPY ./pnpm-lock.yaml ./package.json ./
 
 RUN pnpm install
 
@@ -25,7 +25,7 @@ RUN apk del curl
 
 WORKDIR /usr/src/app
 
-COPY ./pnpm-lock.yaml ./
+COPY ./pnpm-lock.yaml ./package.json ./
 
 RUN pnpm install --prod --frozen-lockfile
 
