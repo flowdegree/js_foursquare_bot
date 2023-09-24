@@ -5,7 +5,6 @@ import cronstrue from 'cronstrue'; // convert cron expressions to human readible
 import { SwarmappApi } from 'swarmapp-api'; // initialize swarmapp api 
 import chalk from 'chalk';
 
-
 import { scheduleTask } from './utils/taskScheduler';
 import { checkTokenValidity } from './utils/tokenValidation'; // to check if user auth token is valid
 import { downloadCollection, updateUserDataInFirestore, updateTokenInFirestore } from './firebase/firestoreOperations'; // firestore functions
@@ -29,13 +28,12 @@ async function run() {
         }
         else {
             console.log(chalk.red(`03: [${user_id}(${users_collection[user_id]?.name})] Auth token not found`));
-            return;
+            continue;
         }
 
         // initialize the foursquare instance
         console.log(`04: Using token for ${chalk.blue(`${users_collection[user_id].name}(${user_id})`)} to initialize a foursquare instance`);
         fsq_instances[user_id] = new SwarmappApi(users_collection[user_id].token);
-
 
         // if token works, keep it in the memory, else delete it
         try {
