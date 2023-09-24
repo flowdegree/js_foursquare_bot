@@ -6,16 +6,73 @@ import { SwarmappApi } from 'swarmapp-api'; // initialize swarmapp api
 import chalk from 'chalk';
 
 import { scheduleTask } from './utils/taskScheduler';
-import { checkTokenValidity } from './utils/tokenValidation'; // to check if user auth token is valid
 import { downloadCollection, updateUserDataInFirestore, updateTokenInFirestore } from './firebase/firestoreOperations'; // firestore functions
 
 const collection_name = 'foursqure';
+
+
+async function handleAutoLike(user_id: string, autolikeConfig: any, fsq_instances: any) {
+    let interval: any = autolikeConfig.interval;
+    console.log(`07: Auto likes enabled with ${interval} (${cronstrue.toString(interval)})`);
+  
+    async function like_unliked() {
+      console.log(Date(), `Running autolike for user ${user_id} with ${interval} (${cronstrue.toString(interval)})`);
+      const NUMBER_OF_CHECKINS_TO_LIKE = 20;
+      const request = await fsq_instances[user_id].likeUnliked(NUMBER_OF_CHECKINS_TO_LIKE);
+      console.log(`success: ${request.succeeded.length} failed: ${request.failed.length}`);
+    }
+  
+    let task = scheduleTask(interval, like_unliked);
+    return task;
+}
+  
+async function handleAutoCheckin(user_id: string, autoCheckin: any, fsq_instances: any) {
+    console.log(`07: venues checkins enabled`);
+    const venues = Object.entries(autoCheckin.venues);
+    console.log(`08: found ${venues.length} venue`);
+    let tasks: any = [];
+  
+    venues.forEach(([venue_id, venue]: any) => {
+      venue.intervals.forEach((interval: any) => {
+        console.log(`09: Setting user ${user_id} check in for ${chalk.green.bold(venue.name)} at the set interval ${chalk.underline(interval.interval)} (${cronstrue.toString(interval.interval)})`);
+  
+        let task = scheduleTask(interval.interval, async () => {
+          console.log(Date(), `Checking in user ${user_id} on ${venue_id}`);
+          await fsq_instances[user_id].checkIn(venue_id);
+        });
+        tasks.push(task);
+      });
+    });
+  
+    return tasks;
+}
+
+async function handleAutoAddTrending(user_id: string, autoAddTrending: any, fsq_instances: any) {
+    console.log(`10: Auto Add Trending enabled`);
+    const locations = Object.entries(autoAddTrending?.locations);
+    console.log(`11: found ${locations.length} locations`);
+    let tasks: any = [];
+  
+    locations?.forEach(([location_name, location]: any) => {
+      console.log(`12: setting user ${user_id} auto checkin and add for ${location_name} at the set interval ${location.interval} (${cronstrue.toString(location.interval)})`);
+  
+      let task = scheduleTask(location.interval, async () => {
+        console.log(Date(), `auto adding user ${user_id} on ${location_name}`);
+        await fsq_instances[user_id].autoAddTrending(location_name, location.venues_limit);
+      });
+      tasks.push(task);
+    });
+  
+    return tasks;
+}
 
 async function run() {
     const users_collection: any = await downloadCollection(collection_name);
     const users_ids = Object.keys(users_collection);
 
     let tasks: any = [];
+    // const to hold a named array of foursquare instances
+    
     const fsq_instances: any = {};
 
     console.log(chalk.green(`01: Found the following keys: ${users_ids.join(', ')}`))
@@ -63,63 +120,25 @@ async function run() {
                 // Check if auto like is enabled and run it with the interval value provided
                 const autolikeConfig = user_configs.settings?.autolike;
 
-                if (autolikeConfig?.enabled && autolikeConfig?.interval) {
-                    let interval: any = autolikeConfig.interval;
-                    console.log(`07: Auto likes enabled with ${interval} (${cronstrue.toString(interval)})`);
-
-                    // can be moved to library
-                    async function like_unliked() {
-                        console.log(Date(), `Running autolike for user ${user_id} with ${interval} (${cronstrue.toString(interval)})`);
-                        const NUMBER_OF_CHECKINS_TO_LIKE = 20;
-                        const request = await fsq_instances[user_id].likeUnliked(NUMBER_OF_CHECKINS_TO_LIKE);
-                        console.log(`success: ${request.succeeded.length} failed: ${request.failed.length}`)
-
-                    }
-
-                    let task = scheduleTask(interval, like_unliked);
+                if (autolikeConfig?.enabled) {
+                    let task = await handleAutoLike(user_id, autolikeConfig, fsq_instances);
                     tasks.push(task);
                 }
-
+          
                 // check if auto checkins enabled, then run them according to their cron timings
                 const autoCheckin = user_configs.settings?.checkins;
 
                 if (autoCheckin?.enabled) {
-                    console.log(`07: venues checkins enabled`);
-                    const venues = Object.entries(autoCheckin.venues);
-                    console.log(`08: found ${venues.length} venue`);
-
-                    venues.forEach(([venue_id, venue]: any) => {
-                        venue.intervals.forEach((interval: any) => {
-                            console.log(`09: Setting user ${user_id} check in for ${chalk.green.bold(venue.name)} at the set interval ${chalk.underline(interval.interval)} (${cronstrue.toString(interval.interval)})`);
-
-                            let task = scheduleTask(interval.interval, async () => {
-                                console.log(Date(), `Checking in user ${user_id} on ${venue_id}`);
-                                await fsq_instances[user_id].checkIn(venue_id);
-                            });
-                            tasks.push(task);
-
-                        })
-                    })
+                    let checkinTasks = await handleAutoCheckin(user_id, autoCheckin, fsq_instances);
+                    tasks = [...tasks, ...checkinTasks];
                 }
 
                 // check if auto add trending
                 const autoAddTrending = user_configs.settings?.autoaddtrending;
-                 
+                
                 if (autoAddTrending?.enabled) {
-                    console.log(`10: Auto Add Trending enabled`);
-                    
-                    const locations = Object.entries(autoAddTrending?.locations);
-                    console.log(`11: found ${locations.length} locations`);
-
-                    locations?.forEach(([location_name, location]: any) => {
-                        console.log(`12: setting user ${user_id} auto checkin and add  for ${location_name} at the set interval ${location.interval} (${cronstrue.toString(location.interval)})`);
-
-                        let task = scheduleTask(location.interval, async () => {
-                            console.log(Date(), `auto adding user ${user_id} on ${location_name}`);
-                            await fsq_instances[user_id].autoAddTrending(location_name, location.venues_limit);
-                        });
-                        tasks.push(task);
-                    })
+                    let trendingTasks = await handleAutoAddTrending(user_id, autoAddTrending, fsq_instances);
+                    tasks = [...tasks, ...trendingTasks];
                 }
             }
             else {

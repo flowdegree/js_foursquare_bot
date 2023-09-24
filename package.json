@@ -1,6 +1,6 @@
 {
   "name": "foursquare_bot",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,6 @@
     "dotenv": "^16.3.1",
     "firebase-admin": "^11.10.1",
     "node-cron": "^3.0.2",
-    "swarmapp-api": "^2.8.0"
+    "swarmapp-api": "^2.8.1"
   }
 }

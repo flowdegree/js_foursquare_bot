@@ -33,8 +33,8 @@ dependencies:
     specifier: ^3.0.2
     version: 3.0.2
   swarmapp-api:
-    specifier: ^2.8.0
-    version: 2.8.0
+    specifier: ^2.8.1
+    version: 2.8.1
 
 devDependencies:
   '@types/node-cron':
@@ -3478,8 +3478,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: false
 
-  /swarmapp-api@2.8.0:
-    resolution: {integrity: sha512-/aR/FeI7gN/dWWu8AhcuKB8AWQIgx9OrXhbhTzbdmWJU5PEvWqFQqekW6E1FN589VbcmOc+GKxmKJHZ68k+iYA==}
+  /swarmapp-api@2.8.1:
+    resolution: {integrity: sha512-KVU6d+hTI0LfPmN9sN/tiHjSF60Wkgf4ez4arKe7pgdnRPxz5D14MAP/yr3d0VsV6ZwSCe4AZQBrab1RdTij/w==}
     dependencies:
       axios: 0.26.1
       form-data: 4.0.0
