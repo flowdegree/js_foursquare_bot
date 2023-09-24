@@ -1,5 +1,11 @@
 # foursquare_bot
 
+## 2.1.1
+
+### Patch Changes
+
+- chore: stuff
+
 ## 2.1.0
 
 ### Minor Changes
