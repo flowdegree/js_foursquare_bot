@@ -1,14 +1,34 @@
-FROM node:16
+FROM node:18.9.0-alpine as development
 
-# Create app directory
+# install curl & pnpm
+RUN apk add --no-cache curl
+RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+RUN apk del curl
+
 WORKDIR /usr/src/app
 
-# Install app dependencies
-COPY ./src/package*.json ./
+COPY ./pnpm-lock.yaml ./
 
-RUN npm install
+RUN pnpm install
 
-# If you are building your code for production
-COPY ./src .
+COPY ./src ./src
 
-CMD [ "node", "index.js" ]
+RUN pnpm build
+
+
+FROM node:18.9.0-alpine as production
+
+# install curl & pnpm
+RUN apk add --no-cache curl
+RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+RUN apk del curl
+
+WORKDIR /usr/src/app
+
+COPY ./pnpm-lock.yaml ./
+
+RUN pnpm install --prod --frozen-lockfile
+
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["pnpm", "start"]

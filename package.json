@@ -1,0 +1,31 @@
+{
+  "name": "foursquare_bot",
+  "version": "2.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@6degrees/node-cron-utils": "^0.1.0",
+    "@changesets/cli": "^2.26.2",
+    "@google-cloud/firestore": "^6.7.0",
+    "chalk": "^5.3.0",
+    "cron-parser": "^4.9.0",
+    "cronstrue": "^2.32.0",
+    "dotenv": "^16.3.1",
+    "firebase-admin": "^11.10.1",
+    "node-cron": "^3.0.2",
+    "swarmapp-api": "^2.8.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsup src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node-cron": "^3.0.9",
+    "tsup": "^7.2.0",
+    "tsx": "^3.12.10",
+    "typescript": "^5.2.2"
+  }
+}

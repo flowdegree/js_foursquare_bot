@@ -2,8 +2,7 @@ version: '3.4'
 services:
   
   bot:
-    build:
-      context: .
+    image: "ghcr.io/automaniacs/js_foursquare_bot:latest"
     environment:
       - FIREBASE_PROJECT_ID
       - FIREBASE_PRIVATE_KEY
