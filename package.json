@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "dependencies": {
     "@6degrees/node-cron-utils": "^0.1.0",
     "@changesets/cli": "^2.26.2",
