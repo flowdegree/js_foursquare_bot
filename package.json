@@ -2,7 +2,7 @@
   "name": "foursquare_bot",
   "version": "2.0.0",
   "description": "",
-  "main": "index.js",
+  "exports": "./index.js",
   "type": "module",
   "dependencies": {
     "@6degrees/node-cron-utils": "^0.1.0",
