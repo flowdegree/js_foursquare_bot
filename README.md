@@ -5,7 +5,7 @@
 
 ## Build the image
 
-`$ docker build -t mo9a7i/js_foursquare_bot .`
+`$ docker build -t flowdegree/js_foursquare_bot .`
 
 ### Remove running instances (if any)
 
@@ -15,7 +15,7 @@
 
 ### Run the new image
 
-`$ docker run --name js_foursquare_bot -d mo9a7i/js_foursquare_bot`
+`$ docker run --name js_foursquare_bot -d flowdegree/js_foursquare_bot`
 
 ## Usage
 
