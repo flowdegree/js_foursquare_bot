@@ -19,13 +19,13 @@
   "dependencies": {
     "@6degrees/node-cron-utils": "^0.1.0",
     "@changesets/cli": "^2.26.2",
+    "@flowdegree/swarmapp-api": "^2.11.2",
     "@google-cloud/firestore": "^6.7.0",
     "chalk": "^4.1.2",
     "cron-parser": "^4.9.0",
     "cronstrue": "^2.32.0",
     "dotenv": "^16.3.1",
     "firebase-admin": "^11.10.1",
-    "node-cron": "^3.0.2",
-    "swarmapp-api": "^2.8.1"
+    "node-cron": "^3.0.2"
   }
 }

@@ -11,6 +11,9 @@ dependencies:
   '@changesets/cli':
     specifier: ^2.26.2
     version: 2.26.2
+  '@flowdegree/swarmapp-api':
+    specifier: ^2.11.2
+    version: 2.11.2
   '@google-cloud/firestore':
     specifier: ^6.7.0
     version: 6.7.0
@@ -32,9 +35,6 @@ dependencies:
   node-cron:
     specifier: ^3.0.2
     version: 3.0.2
-  swarmapp-api:
-    specifier: ^2.8.1
-    version: 2.8.1
 
 devDependencies:
   '@types/node-cron':
@@ -573,6 +573,17 @@ packages:
     resolution: {integrity: sha512-DY02CRhOZwpzO36fHpuVysz6JZrscPiBXD0fXp6qSrL9oNOx5KWICKdR95C0lSITzxp0TZosVyHqzatE8JbcjA==}
     dependencies:
       tslib: 2.6.2
+    dev: false
+
+  /@flowdegree/swarmapp-api@2.11.2:
+    resolution: {integrity: sha512-bYaenOnX1KVz3qAsx2DufZKzKvV7ut7o64Qutmc/HI9oT1KYdgJ5IgXm5ZnpVMAIDzTo7mMLyY1ttY64fyLM7Q==}
+    dependencies:
+      axios: 0.26.1
+      dotenv: 16.3.1
+      form-data: 4.0.0
+      lodash: 4.17.21
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@google-cloud/firestore@6.7.0:
@@ -2648,11 +2659,13 @@ packages:
   /mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
+    requiresBuild: true
     dev: false
 
   /mime-types@2.1.35:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
+    requiresBuild: true
     dependencies:
       mime-db: 1.52.0
     dev: false
@@ -3476,16 +3489,6 @@ packages:
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
-    dev: false
-
-  /swarmapp-api@2.8.1:
-    resolution: {integrity: sha512-KVU6d+hTI0LfPmN9sN/tiHjSF60Wkgf4ez4arKe7pgdnRPxz5D14MAP/yr3d0VsV6ZwSCe4AZQBrab1RdTij/w==}
-    dependencies:
-      axios: 0.26.1
-      form-data: 4.0.0
-      lodash: 4.17.21
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /teeny-request@8.0.3:

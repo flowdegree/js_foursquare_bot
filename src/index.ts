@@ -2,7 +2,7 @@
 //const node_utils = new node_cron_utils();
 
 import cronstrue from 'cronstrue'; // convert cron expressions to human readible
-import { SwarmappApi } from 'swarmapp-api'; // initialize swarmapp api 
+import  SwarmappApi from '@flowdegree/swarmapp-api'; // initialize swarmapp api 
 import chalk from 'chalk';
 
 import { scheduleTask } from './utils/taskScheduler';
