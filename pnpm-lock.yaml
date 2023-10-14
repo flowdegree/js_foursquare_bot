@@ -12,8 +12,8 @@ dependencies:
     specifier: ^2.26.2
     version: 2.26.2
   '@flowdegree/swarmapp-api':
-    specifier: ^2.11.2
-    version: 2.11.2
+    specifier: ^2.11.3
+    version: 2.11.3
   '@google-cloud/firestore':
     specifier: ^6.7.0
     version: 6.7.0
@@ -575,8 +575,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@flowdegree/swarmapp-api@2.11.2:
-    resolution: {integrity: sha512-bYaenOnX1KVz3qAsx2DufZKzKvV7ut7o64Qutmc/HI9oT1KYdgJ5IgXm5ZnpVMAIDzTo7mMLyY1ttY64fyLM7Q==}
+  /@flowdegree/swarmapp-api@2.11.3:
+    resolution: {integrity: sha512-fNX+907WdIssS4dJ5+NTfilrurEdsALedwMa/ztRiv4ZXqTxeHe+4FLGr2QfMbZzELlaWcwmrgOdEZhVg91/5A==}
     dependencies:
       axios: 0.26.1
       dotenv: 16.3.1
