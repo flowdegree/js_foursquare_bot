@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsup src/index.ts"
+    "build": "tsup src/index.ts",
+    "simple-test": "tsx src/test/test.ts"
   },
   "author": "",
   "license": "ISC",
