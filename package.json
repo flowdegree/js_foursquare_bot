@@ -12,21 +12,21 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node-cron": "^3.0.9",
+    "@types/node-cron": "^3.0.11",
     "tsup": "^7.2.0",
-    "tsx": "^3.12.10",
-    "typescript": "^5.2.2"
+    "tsx": "^3.14.0",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "@6degrees/node-cron-utils": "^0.1.0",
-    "@changesets/cli": "^2.26.2",
+    "@changesets/cli": "^2.27.5",
     "@flowdegree/swarmapp-api": "^2.12.0",
-    "@google-cloud/firestore": "^6.7.0",
+    "@google-cloud/firestore": "^6.8.0",
     "chalk": "^4.1.2",
     "cron-parser": "^4.9.0",
-    "cronstrue": "^2.32.0",
-    "dotenv": "^16.3.1",
-    "firebase-admin": "^11.10.1",
-    "node-cron": "^3.0.2"
+    "cronstrue": "^2.50.0",
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^11.11.1",
+    "node-cron": "^3.0.3"
   }
 }
