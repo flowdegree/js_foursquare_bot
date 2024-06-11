@@ -5,7 +5,5 @@ services:
     container_name: js_foursquare_bot
     image: "ghcr.io/flowdegree/js_foursquare_bot:latest"
     environment:
-      - FIREBASE_PROJECT_ID
-      - FIREBASE_PRIVATE_KEY
-      - FIREBASE_CLIENT_EMAIL
+      - FIREBASE_BASE64_CREDS
       - TZ
