@@ -3,22 +3,16 @@ import dotenv from "dotenv";
 dotenv.config();
 
 interface ServiceAccount {
-  project_id: string;
-  client_email: string;
-  private_key: string;
+  FIREBASE_BASE64_CREDS: string;
 }
 
 
-const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = process.env;
+const { FIREBASE_BASE64_CREDS } = process.env;
 
-if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
+if (!FIREBASE_BASE64_CREDS) {
   throw new Error("Missing environment variables");
 }
 
-export const serviceAccount: ServiceAccount = {
-  project_id: FIREBASE_PROJECT_ID,
-  client_email: FIREBASE_CLIENT_EMAIL,
-  private_key: FIREBASE_PRIVATE_KEY,
-};
+export const FIREBASE_BASE64_CREDS_EXPORTED = FIREBASE_BASE64_CREDS;
 
 
