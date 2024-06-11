@@ -1,4 +1,4 @@
-FROM node:18.9.0-alpine as development
+FROM node:18.15.0-alpine as development
 
 # install curl & pnpm
 RUN apk add --no-cache curl
@@ -16,7 +16,7 @@ COPY ./src ./src
 RUN pnpm build
 
 
-FROM node:18.9.0-alpine as production
+FROM node:18.15.0-alpine as production
 
 # install curl & pnpm
 RUN apk add --no-cache curl
