@@ -2,7 +2,7 @@
 //const node_utils = new node_cron_utils();
 
 import cronstrue from 'cronstrue'; // convert cron expressions to human readible
-import  SwarmappApi from '@flowdegree/swarmapp-api'; // initialize swarmapp api 
+import SwarmappApi from '@flowdegree/swarmapp-api'; // initialize swarmapp api 
 import chalk from 'chalk';
 
 import { scheduleTask } from './utils/taskScheduler';
@@ -68,7 +68,7 @@ async function run() {
     let users_collection: any = null;
     try {
         users_collection = await downloadCollection(collection_name);
-        console.log(users_collection)
+        //console.log(users_collection)
         if (!users_collection) {
             console.log(users_collection);
             throw new Error("Failed to download Firestore collection or collection is empty.");
