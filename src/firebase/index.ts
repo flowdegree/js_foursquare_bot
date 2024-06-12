@@ -10,4 +10,8 @@ admin.initializeApp({
     credential: admin.credential.cert(firebase_params_json),
 
 })
+
+console.log(admin.app().name);
+console.log(admin.firestore());
+
 export const firestore = admin.firestore();
