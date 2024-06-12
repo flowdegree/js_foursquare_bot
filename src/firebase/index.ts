@@ -8,17 +8,15 @@ const firebase_params_json = JSON.parse(firebase_private_key);
 
 admin.initializeApp({
     credential: admin.credential.cert(firebase_params_json),
+    expermentalForceLongPolling: true
 
 })
 
 admin.firestore().settings({
     preferRest: true,
-    timestampsInSnapshots: true
+    timestampsInSnapshots: true,
+    experimentalForceLongPolling: true
 })
 
-console.log('connecting with preferRest')
-
-console.log(admin.app().name);
-console.log(admin.firestore());
 
 export const firestore = admin.firestore();

@@ -5,7 +5,10 @@ export async function downloadCollection(collectionName: string) {
         const collectionRef = firestore.collection(collectionName);
         const snapshot = await collectionRef.get();
         const collection:any = {};
-        snapshot.forEach((doc) => {
+        console.log(`05-01: Downloading collection "${collectionName}"...`);
+        console.log('snapshot', snapshot)
+        
+        snapshot.forEach((doc: any) => {
             collection[doc.id] = doc.data();
         });
         return collection;
