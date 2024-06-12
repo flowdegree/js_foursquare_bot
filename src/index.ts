@@ -65,7 +65,19 @@ async function handleAutoAddTrending(user_id: string, autoAddTrending: any, fsq_
 }
 
 async function run() {
-    const users_collection: any = await downloadCollection(collection_name);
+    let users_collection: any = null;
+    try {
+        users_collection = await downloadCollection(collection_name);
+        if (!users_collection) {
+            console.log(users_collection);
+            throw new Error("Failed to download Firestore collection or collection is empty.");
+        }
+    } 
+    catch (error) {
+        console.error(`Error downloading collection "${collection_name}":`, error);
+        return; // Exit if collection retrieval fails
+    }
+
     const users_ids = Object.keys(users_collection);
 
     let tasks: any = [];
