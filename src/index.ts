@@ -4,6 +4,7 @@
 import cronstrue from 'cronstrue'; // convert cron expressions to human readible
 import SwarmappApi from '@flowdegree/swarmapp-api'; // initialize swarmapp api 
 import chalk from 'chalk';
+import pkg from '../package.json';
 
 import { scheduleTask } from './utils/taskScheduler';
 import { downloadCollection, updateUserDataInFirestore, updateTokenInFirestore } from './firebase/firestoreOperations'; // firestore functions
@@ -172,4 +173,5 @@ async function run() {
     }
 }
 
+console.log(`Running ${pkg.name} v${pkg.version}`)
 run();
