@@ -11,6 +11,11 @@ admin.initializeApp({
 
 })
 
+admin.firestore().settings({
+    preferRest: true,
+    timestampsInSnapshots: true
+})
+
 console.log(admin.app().name);
 console.log(admin.firestore());
 
