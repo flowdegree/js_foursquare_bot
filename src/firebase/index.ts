@@ -16,6 +16,8 @@ admin.firestore().settings({
     timestampsInSnapshots: true
 })
 
+console.log('connecting with preferRest')
+
 console.log(admin.app().name);
 console.log(admin.firestore());
 
