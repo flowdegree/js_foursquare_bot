@@ -9,6 +9,8 @@ const app: App = initializeApp({
    credential: cert(firebaseConfig),
 });
 
+console.log(firebaseConfig.private_key)
+
 // check if app is connected
 console.log('is app connected:', app.name);
 
