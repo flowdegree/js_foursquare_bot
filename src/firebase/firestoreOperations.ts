@@ -2,11 +2,14 @@ import { firestore } from '.';
 
 export async function downloadCollection(collectionName: string) {
     try {
-        const collectionRef = firestore.collection(collectionName);
-        const snapshot = await collectionRef.get();
-        const collection:any = {};
         console.log(`05-01: Downloading collection "${collectionName}"...`);
-        console.log('snapshot', snapshot)
+        const collectionRef = firestore.collection(collectionName);
+        console.log('collectionRef', collectionRef)
+        const snapshot = await collectionRef.get();
+        console.log('snapshot length', snapshot.docs.length)
+        const collection:any = {};
+        
+        
         
         snapshot.forEach((doc: any) => {
             collection[doc.id] = doc.data();
