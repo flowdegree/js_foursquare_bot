@@ -1,5 +1,11 @@
 # foursquare_bot
 
+## 2.1.2
+
+### Patch Changes
+
+- .
+
 ## 2.1.1
 
 ### Patch Changes
