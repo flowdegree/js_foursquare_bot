@@ -71,7 +71,7 @@ async function run() {
         users_collection = await downloadCollection(collection_name);
         //console.log(users_collection)
         if (!users_collection) {
-            console.log(users_collection);
+            //console.log(users_collection);
             throw new Error("Failed to download Firestore collection or collection is empty.");
         }
     } 
